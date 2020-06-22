@@ -7,9 +7,9 @@
 #include <fstream>
 #include <algorithm>
 
-const int WINDOW_WIDTH = 640;
-const int WINDOW_HEIGHT = 480;
 const int FONT_HEIGHT = 24;
+int windowWidth = 640;
+int windowHeight = 480;
 int FONT_WIDTH = NULL;                   // Width of a single character of the font, defined later
 int currentLine = 0;                     // The line the user is currently on
 int currentColumn = 0;                   // The column the user is current on
@@ -35,7 +35,7 @@ void init() {
     TTF_Init();
     gFont = TTF_OpenFont("SourceCodePro-Regular.ttf", FONT_HEIGHT);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
-    gWindow = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+    gWindow = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
     gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0x00);
     char singleCharacter[] = " "; // A single character to measure font width (monospace)
@@ -88,7 +88,7 @@ void SaveTextToFile(std::fstream& file) {
 Given a line the user is working one and the line which appears at the top, highlights the line an alternate color to the background
 */
 void RenderLineHighlight(int currentLine, int currentTopLine) {
-    SDL_Rect highlight = {0, (currentLine * FONT_HEIGHT) - (currentTopLine * FONT_HEIGHT), WINDOW_WIDTH, FONT_HEIGHT};
+    SDL_Rect highlight = {0, (currentLine * FONT_HEIGHT) - (currentTopLine * FONT_HEIGHT), windowWidth, FONT_HEIGHT};
     SDL_SetRenderDrawColor(gRenderer, 0x21, 0x21, 0x21, 0xFF);
     SDL_RenderFillRect(gRenderer, &highlight);
     SDL_RenderDrawRect(gRenderer, &highlight);
@@ -132,7 +132,7 @@ void RenderCursor(int currentLine, int currentColumn, int currentTopLine) {
 Returns if the currentLine value will mean the line would be out of the screen
 */
 bool ShouldIncreaseCurrentTopLine(int currentTopLine, int currentLine) {
-    return ((currentLine * FONT_HEIGHT) - (currentTopLine * FONT_HEIGHT) >= WINDOW_HEIGHT);
+    return ((currentLine * FONT_HEIGHT) - (currentTopLine * FONT_HEIGHT) >= windowHeight);
 }
 
 /*
@@ -209,6 +209,11 @@ int main(int argc, char* args[]) {
                         hasUnsavedChanges = true;
                         text[currentLine].insert(currentColumn, event.text.text);
                         currentColumn++;
+                    }
+                } else if(event.type == SDL_WINDOWEVENT) {
+                    if(event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                        windowWidth = event.window.data1;
+                        windowHeight = event.window.data2;
                     }
                 }
             }
