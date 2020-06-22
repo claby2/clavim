@@ -54,7 +54,9 @@ std::string ExePath(){
     char buf[PATH_MAX];
     uint32_t size = sizeof(buf);
     if(_NSGetExecutablePath(buf, &size) == 0) {
-        return buf;
+        std::string path = buf;
+        path = path.substr(0, path.find_last_of('/'));
+        return path;
     }
 }
 #else
@@ -104,7 +106,7 @@ void init() {
     gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0x00);
     char singleCharacter[] = " "; // A single character to measure font width (monospace)
-    int width, height;            // Height is not actually read later on
+    int width, height;
     TTF_SizeText(gFont, singleCharacter, &width, &height);
     FONT_WIDTH = width;
     FONT_HEIGHT = height;
