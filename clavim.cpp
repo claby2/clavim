@@ -150,7 +150,7 @@ bool ShouldDecreaseCurrentTopLine(int currentTopLine, int currentLine) {
 }
 
 int main(int argc, char* args[]) {
-    saveFilePath = args[1];
+    if(args[1]) saveFilePath = args[1];
     file.open(saveFilePath.c_str());
     if(file) {
         file.close();
