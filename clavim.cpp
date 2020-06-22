@@ -235,6 +235,7 @@ int main(int argc, char* args[]) {
                 } else if(event.type == SDL_KEYDOWN) {
                     if(event.key.keysym.sym == SDLK_UP) { // User wants to navigate to the line above
                         if(currentLine > 0) {
+                            currentColumn = std::min(static_cast<int>(text[currentLine - 1].length()), currentColumn);
                             currentLine--;
                             if(ShouldDecreaseCurrentTopLine(currentTopLine, currentLine)) currentTopLine--;
                         }
