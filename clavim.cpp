@@ -7,7 +7,14 @@
 #include <fstream>
 #include <algorithm>
 
-const int FONT_HEIGHT = 24;
+SDL_Window* gWindow = NULL;
+SDL_Renderer* gRenderer = NULL;
+TTF_Font* gFont = NULL;
+SDL_Surface* gTextSurface = NULL;
+SDL_Texture* gTextTexture = NULL;
+SDL_Color TEXT_COLOR = {255, 255, 255};
+
+int FONT_HEIGHT = 16;
 int windowWidth = 640;
 int windowHeight = 480;
 int FONT_WIDTH = NULL;                   // Width of a single character of the font, defined later
@@ -20,13 +27,6 @@ std::fstream file;                       // The file to be read and write
 std::string saveFilePath;                // Place to read and then write
 std::string windowTitle = "clavim";      // Title of SDL2 window
 std::vector<std::string> text = {""};    // Stores text of file, each string elements represents one line
-
-SDL_Window* gWindow = NULL;
-SDL_Renderer* gRenderer = NULL;
-TTF_Font* gFont = NULL;
-SDL_Surface* gTextSurface = NULL;
-SDL_Texture* gTextTexture = NULL;
-SDL_Color TEXT_COLOR = {255, 255, 255};
 
 /*
 Initialize related to SDL2
@@ -43,6 +43,7 @@ void init() {
     int width, height;            // Height is not actually read later on
     TTF_SizeText(gFont, singleCharacter, &width, &height);
     FONT_WIDTH = width;
+    FONT_HEIGHT = height;
 }
 
 /*
@@ -106,7 +107,7 @@ Renders text
 void RenderText(std::vector<std::string> text, int currentTopLine) {
     for(int i = currentTopLine; i < text.size(); i++) {
         std::string line = std::string(((std::to_string(text.size())).size()) - (std::to_string(i + 1).size()), ' ') + std::to_string(i + 1) + ' ' +  text[i];
-        gTextSurface = TTF_RenderText_Solid(gFont, line.c_str(), TEXT_COLOR);
+        gTextSurface = TTF_RenderUTF8_Blended(gFont, line.c_str(), TEXT_COLOR);
         gTextTexture = SDL_CreateTextureFromSurface(gRenderer, gTextSurface);
         int width, height; // Height is not actually read later on
         TTF_SizeText(gFont, line.c_str(), &width, &height); // Use actual text size instead of FONT_WIDTH for extra precision
@@ -250,6 +251,7 @@ int main(int argc, char* args[]) {
 
             SDL_RenderPresent(gRenderer);
 
+            SDL_Delay(10);
         }
 
         close();
