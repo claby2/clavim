@@ -15,6 +15,7 @@ int currentLine = 0;                     // The line the user is currently on
 int currentColumn = 0;                   // The column the user is current on
 int currentTopLine = 0;                  // The line which is rendered at the top of the text
 bool hasUnsavedChanges = false;          // Represents if the user has made changes to the file and has not saved
+bool isSelectingAll = false;             // Represents if the user is selecting all due to shortcut
 std::fstream file;                       // The file to be read and write
 std::string saveFilePath;                // Place to read and then write
 std::string windowTitle = "clavim";      // Title of SDL2 window
@@ -88,7 +89,12 @@ void SaveTextToFile(std::fstream& file) {
 Given a line the user is working one and the line which appears at the top, highlights the line an alternate color to the background
 */
 void RenderLineHighlight(int currentLine, int currentTopLine) {
-    SDL_Rect highlight = {0, (currentLine * FONT_HEIGHT) - (currentTopLine * FONT_HEIGHT), windowWidth, FONT_HEIGHT};
+    SDL_Rect highlight;
+    if(!isSelectingAll) {
+        highlight = {0, (currentLine * FONT_HEIGHT) - (currentTopLine * FONT_HEIGHT), windowWidth, FONT_HEIGHT};
+    } else {
+        highlight = {0, 0, windowWidth, windowHeight};
+    }
     SDL_SetRenderDrawColor(gRenderer, 0x21, 0x21, 0x21, 0xFF);
     SDL_RenderFillRect(gRenderer, &highlight);
     SDL_RenderDrawRect(gRenderer, &highlight);
@@ -175,15 +181,20 @@ int main(int argc, char* args[]) {
                         }
                     } else if(event.key.keysym.sym == SDLK_BACKSPACE) { // User wants to either delete character on line or the line itself
                         hasUnsavedChanges = true;
-                        if(text[currentLine].length()) { // If there is at least one character in the line
-                            if(currentColumn) { // If there is a character before the cursor (which is to be deleted)
-                                text[currentLine].erase(text[currentLine].begin() + currentColumn - 1);
-                                currentColumn--;
+                        if(isSelectingAll) { // If the user is selecting entire text
+                            text.clear();
+                            text.push_back("");
+                        } else {
+                            if(text[currentLine].length()) { // If there is at least one character in the line
+                                if(currentColumn) { // If there is a character before the cursor (which is to be deleted)
+                                    text[currentLine].erase(text[currentLine].begin() + currentColumn - 1);
+                                    currentColumn--;
+                                }
+                            } else if(text.size() > 1){ // If there is at least 2 lines, so the line before can be deleted
+                                text.erase(text.begin() + currentLine);
+                                currentLine = currentLine -1 >= 0 ? currentLine - 1 : 0;
+                                if(ShouldDecreaseCurrentTopLine(currentTopLine, currentLine)) currentTopLine--;
                             }
-                        } else if(text.size() > 1){ // If there is at least 2 lines, so the line before can be deleted
-                            text.erase(text.begin() + currentLine);
-                            currentLine = currentLine -1 >= 0 ? currentLine - 1 : 0;
-                            if(ShouldDecreaseCurrentTopLine(currentTopLine, currentLine)) currentTopLine--;
                         }
                     } else if(event.key.keysym.sym == SDLK_LEFT) { // User wants to navigate left
                         currentColumn = currentColumn - 1 >= 0 ? currentColumn - 1: 0;
@@ -197,12 +208,18 @@ int main(int argc, char* args[]) {
                         if(ShouldIncreaseCurrentTopLine(currentTopLine, currentLine)) currentTopLine++;
                     }
                     /* SHORTCUTS */
-                    else if(event.key.keysym.sym == SDLK_s && SDL_GetModState() & KMOD_CTRL){ // User wants to save file
+                    else if(event.key.keysym.sym == SDLK_s && SDL_GetModState() & KMOD_CTRL) { // User wants to save file
                         if(hasUnsavedChanges) {
                             hasUnsavedChanges = false;
                             SaveTextToFile(file);
                             SDL_SetWindowTitle(gWindow, windowTitle.c_str());
                         }
+                    } else if(event.key.keysym.sym == SDLK_a && SDL_GetModState() & KMOD_CTRL) { // User wants to select all text
+                        isSelectingAll = true;
+                    }
+
+                    if(!(event.key.keysym.sym == SDLK_a && SDL_GetModState() & KMOD_CTRL)) {
+                        isSelectingAll = false;
                     }
                 } else if(event.type == SDL_TEXTINPUT) {
                     if(!( SDL_GetModState() & KMOD_CTRL)) {
