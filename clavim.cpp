@@ -7,8 +7,6 @@
 #include <fstream>
 #include <algorithm>
 
-#define dirSep "/" // Directory seperator
-
 #ifdef _WIN32
 #include <direct.h>
 #include <windows.h>
@@ -28,6 +26,7 @@ std::string ExePath() {
 #include <unistd.h>
 #include <limits.h>
 #define _getcwd getcwd
+#define dirSep "/" // Directory seperator
 
 /*
 Get exe path, linux
@@ -46,6 +45,7 @@ std::string ExePath() {
 #include <unistd.h>
 #include <limits.h>
 #define _getcwd getcwd
+#define dirSep "/" // Directory seperator
 
 /*
 Get exe path, apple
@@ -72,7 +72,7 @@ SDL_Color TEXT_COLOR = {255, 255, 255};
 int FONT_HEIGHT = 16;
 int windowWidth = 640;
 int windowHeight = 480;
-int FONT_WIDTH = NULL;                   // Width of a single character of the font, defined later
+int FONT_WIDTH;                          // Width of a single character of the font, defined later
 int currentLine = 0;                     // The line the user is currently on
 int currentColumn = 0;                   // The column the user is current on
 int currentTopLine = 0;                  // The line which is rendered at the top of the text
@@ -187,7 +187,7 @@ Render cursor
 */
 void RenderCursor(int currentLine, int currentColumn, int currentTopLine) {
     SDL_Rect cursor = {
-        (FONT_WIDTH * ((std::to_string(text.size())).size())) + FONT_WIDTH + (currentColumn * FONT_WIDTH),
+        (FONT_WIDTH * (int)((std::to_string(text.size())).size())) + FONT_WIDTH + (currentColumn * FONT_WIDTH),
         (currentLine * FONT_HEIGHT) - (currentTopLine * FONT_HEIGHT),
         FONT_WIDTH,
         FONT_HEIGHT
