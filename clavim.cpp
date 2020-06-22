@@ -26,7 +26,7 @@ SDL_Renderer* gRenderer = NULL;
 TTF_Font* gFont = NULL;
 SDL_Surface* gTextSurface = NULL;
 SDL_Texture* gTextTexture = NULL;
-SDL_Color WHITE = {255, 255, 255};
+SDL_Color TEXT_COLOR = {255, 255, 255};
 
 /*
 Initialize related to SDL2
@@ -106,7 +106,7 @@ Renders text
 void RenderText(std::vector<std::string> text, int currentTopLine) {
     for(int i = currentTopLine; i < text.size(); i++) {
         std::string line = std::string(((std::to_string(text.size())).size()) - (std::to_string(i + 1).size()), ' ') + std::to_string(i + 1) + ' ' +  text[i];
-        gTextSurface = TTF_RenderText_Solid(gFont, line.c_str(), WHITE);
+        gTextSurface = TTF_RenderText_Solid(gFont, line.c_str(), TEXT_COLOR);
         gTextTexture = SDL_CreateTextureFromSurface(gRenderer, gTextSurface);
         int width, height; // Height is not actually read later on
         TTF_SizeText(gFont, line.c_str(), &width, &height); // Use actual text size instead of FONT_WIDTH for extra precision
@@ -182,6 +182,8 @@ int main(int argc, char* args[]) {
                     } else if(event.key.keysym.sym == SDLK_BACKSPACE) { // User wants to either delete character on line or the line itself
                         hasUnsavedChanges = true;
                         if(isSelectingAll) { // If the user is selecting entire text
+                            currentColumn = 0;
+                            currentLine = 0;
                             text.clear();
                             text.push_back("");
                         } else {
@@ -222,7 +224,7 @@ int main(int argc, char* args[]) {
                         isSelectingAll = false;
                     }
                 } else if(event.type == SDL_TEXTINPUT) {
-                    if(!( SDL_GetModState() & KMOD_CTRL)) {
+                    if(!(SDL_GetModState() & KMOD_CTRL)) {
                         hasUnsavedChanges = true;
                         text[currentLine].insert(currentColumn, event.text.text);
                         currentColumn++;
