@@ -20,11 +20,10 @@ Get exe path, windows
 */
 std::string ExePath() {
     char buffer[MAX_PATH];
-    GetModuleFileName( NULL, buffer, MAX_PATH );
-    std::string::size_type pos = std::string( buffer ).find_last_of( "\\/" );
-    return std::string( buffer ).substr( 0, pos);
+    GetModuleFileName(NULL, buffer, MAX_PATH);
+    std::string::size_type pos = std::string(buffer).find_last_of("\\/");
+    return std::string(buffer).substr(0, pos);
 }
-
 #elif __linux__
 #include <unistd.h>
 #include <limits.h>
@@ -44,6 +43,9 @@ std::string ExePath() {
 #if (defined (__APPLE__) && defined (__MACH__))
 #include <mach-o/dyld.h>
 #include <sys/syslimits.h>
+#include <unistd.h>
+#include <limits.h>
+#define _getcwd getcwd
 
 /*
 Get exe path, apple
