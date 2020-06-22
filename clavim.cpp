@@ -13,6 +13,7 @@
 #include <direct.h>
 #include <windows.h>
 #define dirSep "\\" // Directory seperator for windows
+#define PATH_MAX MAX_PATH
 
 /*
 Get exe path, windows
@@ -35,7 +36,9 @@ Get exe path, linux
 std::string ExePath() {
     char result[PATH_MAX];
     ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
-    return std::string(result, (count > 0) ? count : 0);
+    std::string path = std::string(result, (count > 0) ? count : 0);
+    path = path.substr(0, path.find_last_of('/'));
+    return path;
 }
 #else 
 #if (defined (__APPLE__) && defined (__MACH__))
@@ -82,8 +85,8 @@ std::vector<std::string> text = {""};    // Stores text of file, each string ele
 Get current working directory
 */
 std::string pwd() {
-    char buffer[MAX_PATH];
-    _getcwd(buffer, MAX_PATH);
+    char buffer[PATH_MAX];
+    _getcwd(buffer, PATH_MAX);
     return std::string(buffer);
 }
 
