@@ -39,7 +39,7 @@ void init() {
     gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0x00);
     char singleCharacter[] = " "; // A single character to measure font width (monospace)
-    int width, height;            // Height is not actually read
+    int width, height;            // Height is not actually read later on
     TTF_SizeText(gFont, singleCharacter, &width, &height);
     FONT_WIDTH = width;
 }
@@ -102,7 +102,7 @@ void RenderText(std::vector<std::string> text, int currentTopLine) {
         std::string line = std::string(((std::to_string(text.size())).size()) - (std::to_string(i + 1).size()), ' ') + std::to_string(i + 1) + ' ' +  text[i];
         gTextSurface = TTF_RenderText_Solid(gFont, line.c_str(), WHITE);
         gTextTexture = SDL_CreateTextureFromSurface(gRenderer, gTextSurface);
-        int width, height; // height is not actually read
+        int width, height; // Height is not actually read later on
         TTF_SizeText(gFont, line.c_str(), &width, &height); // Use actual text size instead of FONT_WIDTH for extra precision
         SDL_Rect textRect = {0, ((i * FONT_HEIGHT) - (currentTopLine * FONT_HEIGHT)), width, FONT_HEIGHT};
         SDL_RenderCopy(gRenderer, gTextTexture, NULL, &textRect);
