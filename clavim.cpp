@@ -7,6 +7,56 @@
 #include <fstream>
 #include <algorithm>
 
+#define dirSep "/" // Directory seperator
+
+#ifdef _WIN32
+#include <direct.h>
+#include <windows.h>
+#define dirSep "\\" // Directory seperator for windows
+
+/*
+Get exe path, windows
+*/
+std::string ExePath() {
+    char buffer[MAX_PATH];
+    GetModuleFileName( NULL, buffer, MAX_PATH );
+    std::string::size_type pos = std::string( buffer ).find_last_of( "\\/" );
+    return std::string( buffer ).substr( 0, pos);
+}
+
+#elif __linux__
+#include <unistd.h>
+#include <limits.h>
+#define _getcwd getcwd
+
+/*
+Get exe path, linux
+*/
+std::string ExePath() {
+    char result[PATH_MAX];
+    ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+    return std::string(result, (count > 0) ? count : 0);
+}
+#else 
+#if (defined (__APPLE__) && defined (__MACH__))
+#include <mach-o/dyld.h>
+#include <sys/syslimits.h>
+
+/*
+Get exe path, apple
+*/
+std::string ExePath(){
+    char buf[PATH_MAX];
+    uint32_t size = sizeof(buf);
+    if(_NSGetExecutablePath(buf, &size) == 0) {
+        return buf;
+    }
+}
+#else
+    #error PLATFORM NOT SUPPORTED
+#endif
+#endif
+
 SDL_Window* gWindow = NULL;
 SDL_Renderer* gRenderer = NULL;
 TTF_Font* gFont = NULL;
@@ -29,12 +79,21 @@ std::string windowTitle = "clavim";      // Title of SDL2 window
 std::vector<std::string> text = {""};    // Stores text of file, each string elements represents one line
 
 /*
+Get current working directory
+*/
+std::string pwd() {
+    char buffer[MAX_PATH];
+    _getcwd(buffer, MAX_PATH);
+    return std::string(buffer);
+}
+
+/*
 Initialize related to SDL2
 */
 void init() {
     SDL_Init(SDL_INIT_VIDEO);
     TTF_Init();
-    gFont = TTF_OpenFont("SourceCodePro-Regular.ttf", FONT_HEIGHT);
+    gFont = TTF_OpenFont((ExePath() + dirSep + "SourceCodePro-Regular.ttf").c_str(), FONT_HEIGHT);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
     gWindow = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
     gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
@@ -150,7 +209,7 @@ bool ShouldDecreaseCurrentTopLine(int currentTopLine, int currentLine) {
 }
 
 int main(int argc, char* args[]) {
-    if(args[1]) saveFilePath = args[1];
+    if(args[1]) saveFilePath = pwd() + dirSep + args[1];
     file.open(saveFilePath.c_str());
     if(file) {
         file.close();
