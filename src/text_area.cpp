@@ -126,16 +126,16 @@ bool TextArea::removeChar() {
             return true;
         } else {
             if(currentLine) {
-                int lengthOfPreviousLine = text[currentLine - 1].length();
+                // Concatenate the contents of current line to the end of the previous line and delete current line
                 text[currentLine - 1] += text[currentLine];
-                text.erase(text.begin() + currentLine); // Erase currentline
+                setColumn(text[currentLine - 1].length());
+                text.erase(text.begin() + currentLine); // Erase current line
                 setLine(currentLine - 1);
-                setColumn(lengthOfPreviousLine);
             }
         }
-    } else if(text.size() > 1){ // If there are at least 2 lines, so the line before can be deleted
-        text.erase(text.begin() + currentLine);
-        setLine(std::max(currentLine - 1, 0));
+    } else if(text.size() > 1){ // If there are at least 2 lines, it means the current line can be deleted
+        text.erase(text.begin() + currentLine); // Erase current line
+        setLine(currentLine - 1);
     }
     return false;
 }
