@@ -134,7 +134,7 @@ void close() {
 /*
 Input existing content of file into text vector
 */
-void InputFileToText(std::fstream& file) {
+void InputFileToText() {
     file.open(saveFilePath.c_str(), std::ios::in); // Open in read mode
     std::string line;
     int lineNumber = 0;
@@ -149,7 +149,7 @@ void InputFileToText(std::fstream& file) {
 /*
 Write the content of text vector into the file
 */
-void SaveTextToFile(std::fstream& file) {
+void SaveTextToFile() {
     file.open(saveFilePath.c_str(), std::ios::out);
     for(int i = 0; i < text.size(); i++) {
         file << text[i] << "\n";
@@ -160,7 +160,7 @@ void SaveTextToFile(std::fstream& file) {
 /*
 Given a line the user is working one and the line which appears at the top, highlights the line an alternate color to the background
 */
-void RenderLineHighlight(int currentLine, int currentTopLine) {
+void RenderLineHighlight() {
     SDL_Rect highlight;
     if(!isSelectingAll) {
         highlight = {0, (currentLine * FONT_HEIGHT) - (currentTopLine * FONT_HEIGHT), windowWidth, FONT_HEIGHT};
@@ -175,7 +175,7 @@ void RenderLineHighlight(int currentLine, int currentTopLine) {
 /*
 Renders text
 */
-void RenderText(std::vector<std::string> text, int currentTopLine) {
+void RenderText() {
     int currentLastLine = std::min(
         (int)text.size(), 
         (int)(currentTopLine + (windowHeight / FONT_HEIGHT) + 1)
@@ -196,7 +196,7 @@ void RenderText(std::vector<std::string> text, int currentTopLine) {
 /*
 Render cursor
 */
-void RenderCursor(int currentLine, int currentColumn, int currentTopLine) {
+void RenderCursor() {
     SDL_Rect cursor = {
         (FONT_WIDTH * (int)((std::to_string(text.size())).size())) + FONT_WIDTH + (currentColumn * FONT_WIDTH),
         (currentLine * FONT_HEIGHT) - (currentTopLine * FONT_HEIGHT),
@@ -213,14 +213,14 @@ void RenderCursor(int currentLine, int currentColumn, int currentTopLine) {
 /*
 Returns if the currentLine value will mean the line would be out of the screen
 */
-bool ShouldIncreaseCurrentTopLine(int currentTopLine, int currentLine) {
+bool ShouldIncreaseCurrentTopLine() {
     return ((currentLine * FONT_HEIGHT) - (currentTopLine * FONT_HEIGHT) >= windowHeight);
 }
 
 /*
 Returns if the currentLine value will mean the line would be out of the screen
 */
-bool ShouldDecreaseCurrentTopLine(int currentTopLine, int currentLine) {
+bool ShouldDecreaseCurrentTopLine() {
     return ((currentLine * FONT_HEIGHT) - (currentTopLine * FONT_HEIGHT) < 0);
 }
 
@@ -234,7 +234,7 @@ int main(int argc, char* args[]) {
         bool quit = false;
         SDL_Event event;
 
-        InputFileToText(file);
+        InputFileToText();
 
         windowTitle += (" - " + saveFilePath);
         SDL_SetWindowTitle(gWindow, windowTitle.c_str());
@@ -251,13 +251,13 @@ int main(int argc, char* args[]) {
                         if(currentLine > 0) {
                             currentColumn = std::min(static_cast<int>(text[currentLine - 1].length()), currentColumn);
                             currentLine--;
-                            if(ShouldDecreaseCurrentTopLine(currentTopLine, currentLine)) currentTopLine--;
+                            if(ShouldDecreaseCurrentTopLine()) currentTopLine--;
                         }
                     } else if(event.key.keysym.sym == SDLK_DOWN) { // User wants to navigate the line below
                         if(currentLine + 1 < text.size()) {
                             currentColumn = std::min(static_cast<int>(text[currentLine + 1].length()), currentColumn);
                             currentLine += 1;
-                            if(ShouldIncreaseCurrentTopLine(currentTopLine, currentLine)) currentTopLine++;
+                            if(ShouldIncreaseCurrentTopLine()) currentTopLine++;
                         }
                     } else if(event.key.keysym.sym == SDLK_BACKSPACE) { // User wants to either delete character on line or the line itself
                         hasUnsavedChanges = true;
@@ -275,7 +275,7 @@ int main(int argc, char* args[]) {
                             } else if(text.size() > 1){ // If there is at least 2 lines, so the line before can be deleted
                                 text.erase(text.begin() + currentLine);
                                 currentLine = currentLine -1 >= 0 ? currentLine - 1 : 0;
-                                if(ShouldDecreaseCurrentTopLine(currentTopLine, currentLine)) currentTopLine--;
+                                if(ShouldDecreaseCurrentTopLine()) currentTopLine--;
                             }
                         }
                     } else if(event.key.keysym.sym == SDLK_LEFT) { // User wants to navigate left
@@ -287,13 +287,13 @@ int main(int argc, char* args[]) {
                         text.insert(text.begin() + currentLine + 1, "");
                         currentLine++;
                         currentColumn = 0;
-                        if(ShouldIncreaseCurrentTopLine(currentTopLine, currentLine)) currentTopLine++;
+                        if(ShouldIncreaseCurrentTopLine()) currentTopLine++;
                     }
                     /* SHORTCUTS */
                     else if(event.key.keysym.sym == SDLK_s && SDL_GetModState() & KMOD_CTRL) { // User wants to save file
                         if(hasUnsavedChanges) {
                             hasUnsavedChanges = false;
-                            SaveTextToFile(file);
+                            SaveTextToFile();
                             SDL_SetWindowTitle(gWindow, windowTitle.c_str());
                         }
                     } else if(event.key.keysym.sym == SDLK_a && SDL_GetModState() & KMOD_CTRL) { // User wants to select all text
@@ -327,9 +327,9 @@ int main(int argc, char* args[]) {
                 SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0x00);
                 SDL_RenderClear(gRenderer);
 
-                RenderLineHighlight(currentLine, currentTopLine);
-                RenderText(text, currentTopLine);
-                RenderCursor(currentLine, currentColumn, currentTopLine);
+                RenderLineHighlight();
+                RenderText();
+                RenderCursor();
 
                 SDL_RenderPresent(gRenderer);
             }
