@@ -1,12 +1,8 @@
 #ifndef TEXT_AREA_HPP
 #define TEXT_AREA_HPP
-#include "common.hpp"
 #include "cursor.hpp"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 #include <vector>
 #include <string>
-#include <fstream>
 
 class TextArea {
     public:

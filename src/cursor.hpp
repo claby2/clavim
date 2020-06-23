@@ -2,7 +2,6 @@
 #define CURSOR_HPP
 #include "common.hpp"
 #include <SDL2/SDL.h>
-#include <string>
 
 class Cursor {
     private:

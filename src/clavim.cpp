@@ -6,11 +6,7 @@
 #include "cross_platform.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-#include <vector>
 #include <iostream>
-#include <fstream>
-#include <algorithm>
-#include <math.h>
 
 /*
 Get current working directory
