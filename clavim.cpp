@@ -171,7 +171,11 @@ void RenderLineHighlight(int currentLine, int currentTopLine) {
 Renders text
 */
 void RenderText(std::vector<std::string> text, int currentTopLine) {
-    for(int i = currentTopLine; i < text.size(); i++) {
+    int currentLastLine = std::min(
+        (int)text.size(), 
+        (int)(currentTopLine + (windowHeight / FONT_HEIGHT) + 1)
+    );
+    for(int i = currentTopLine; i < currentLastLine; i++) {
         std::string line = std::string(((std::to_string(text.size())).size()) - (std::to_string(i + 1).size()), ' ') + std::to_string(i + 1) + ' ' +  text[i];
         gTextSurface = TTF_RenderUTF8_Blended(gFont, line.c_str(), TEXT_COLOR);
         gTextTexture = SDL_CreateTextureFromSurface(gRenderer, gTextSurface);
