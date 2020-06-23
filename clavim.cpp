@@ -74,16 +74,21 @@ SDL_Color TEXT_COLOR = {255, 255, 255};
 int FONT_HEIGHT = 16;
 int windowWidth = 640;
 int windowHeight = 480;
-int FONT_WIDTH;                          // Width of a single character of the font, defined later
-int currentLine = 0;                     // The line the user is currently on
-int currentColumn = 0;                   // The column the user is current on
-int currentTopLine = 0;                  // The line which is rendered at the top of the text
-bool hasUnsavedChanges = false;          // Represents if the user has made changes to the file and has not saved
-bool isSelectingAll = false;             // Represents if the user is selecting all due to shortcut
-std::fstream file;                       // The file to be read and write
-std::string saveFilePath;                // Place to read and then write
-std::string windowTitle = "clavim";      // Title of SDL2 window
-std::vector<std::string> text = {""};    // Stores text of file, each string elements represents one line
+int FONT_WIDTH;                               // Width of a single character of the font, defined later
+bool hasUnsavedChanges = false;               // Represents if the user has made changes to the file and has not saved
+bool isSelectingAll = false;                  // Represents if the user is selecting all due to shortcut
+bool hasRenderedOnce = false;                 // Represents if the editor has been rendered at least once
+std::fstream file;                            // The file to be read and write
+std::string saveFilePath;                     // Place to read and then write
+std::string windowTitle = "clavim";           // Title of SDL2 window
+int currentLine = 0;                          // The line the user is currently on
+int currentColumn = 0;                        // The column the user is current on
+int currentTopLine = 0;                       // The line which is rendered at the top of the text
+std::vector<std::string> text = {""};         // Stores text of file, each string elements represents one line
+int previousLine;                             // Equal to current line at the start of the main loop to detect changes
+int previousColumn;                           // Equal to current column at the start of the main loop to detect changes
+std::vector<std::string> previousText = {""}; // Equal to text vector at the start of the main loop to detect changes
+
 
 /*
 Get current working directory
@@ -235,6 +240,9 @@ int main(int argc, char* args[]) {
         SDL_SetWindowTitle(gWindow, windowTitle.c_str());
 
         while(!quit) {
+            previousLine = currentLine;
+            previousColumn = currentColumn;
+            previousText = text;
             while(SDL_PollEvent(&event)) {
                 if(event.type == SDL_QUIT) {
                     quit = true;
@@ -313,14 +321,18 @@ int main(int argc, char* args[]) {
                 SDL_SetWindowTitle(gWindow, (windowTitle + '*').c_str());
             }
 
-            SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0x00);
-            SDL_RenderClear(gRenderer);
+            if(!hasRenderedOnce || (currentColumn != previousColumn || currentLine != previousLine || text != previousText)) {
+                // Only executes if changes have been detected
+                hasRenderedOnce = true; // Exception: No changes have been detected on start up but elements still need to be rendered
+                SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0x00);
+                SDL_RenderClear(gRenderer);
 
-            RenderLineHighlight(currentLine, currentTopLine);
-            RenderText(text, currentTopLine);
-            RenderCursor(currentLine, currentColumn, currentTopLine);
+                RenderLineHighlight(currentLine, currentTopLine);
+                RenderText(text, currentTopLine);
+                RenderCursor(currentLine, currentColumn, currentTopLine);
 
-            SDL_RenderPresent(gRenderer);
+                SDL_RenderPresent(gRenderer);
+            }
 
             SDL_Delay(10);
         }
