@@ -427,49 +427,46 @@ int main(int argc, char* args[]) {
         windowTitle += (" - " + saveFilePath);
         SDL_SetWindowTitle(gWindow, windowTitle.c_str());
 
-        while(!quit) {
+        while(!quit && SDL_WaitEvent(&event)) {
             textArea.setPrevious();
-            while(SDL_PollEvent(&event)) {
-                if(event.type == SDL_QUIT) {
-                    quit = true;
-                } else if(event.type == SDL_KEYDOWN) {
-                    if(event.key.keysym.sym == SDLK_UP) { // User wants to navigate to the line above
-                        textArea.up();
-                    } else if(event.key.keysym.sym == SDLK_DOWN) { // User wants to navigate the line below
-                        textArea.down();
-                    } else if(event.key.keysym.sym == SDLK_BACKSPACE) { // User wants to either delete character on line or the line itself
-                        textArea.backspace();
-                    } else if(event.key.keysym.sym == SDLK_LEFT) { // User wants to navigate left
-                        textArea.left();
-                    } else if(event.key.keysym.sym == SDLK_RIGHT) { // User wants to navigate right
-                        textArea.right();
-                    } else if(event.key.keysym.sym == SDLK_RETURN) { // User wants to create a new line
-                        textArea.newLine();
-                    }
-                    /* SHORTCUTS */
-                    else if(event.key.keysym.sym == SDLK_s && SDL_GetModState() & KMOD_CTRL) { // User wants to save file
-                        textArea.save();
-                    } else if(event.key.keysym.sym == SDLK_a && SDL_GetModState() & KMOD_CTRL) { // User wants to select all text
-                        textArea.selectAll();
-                    }
 
-                    if(!(event.key.keysym.sym == SDLK_a && SDL_GetModState() & KMOD_CTRL)) {
-                        textArea.removeSelection();
-                    }
-                } else if(event.type == SDL_TEXTINPUT) {
-                    if(!(SDL_GetModState() & KMOD_CTRL)) {
-                        textArea.inputText(event.text.text);
-                    }
-                } else if(event.type == SDL_WINDOWEVENT) {
-                    if(event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                        textArea.resizeWindow(event.window.data1, event.window.data2);
-                    }
+            if(event.type == SDL_QUIT) {
+                quit = true;
+            } else if(event.type == SDL_KEYDOWN) {
+                if(event.key.keysym.sym == SDLK_UP) { // User wants to navigate to the line above
+                    textArea.up();
+                } else if(event.key.keysym.sym == SDLK_DOWN) { // User wants to navigate the line below
+                    textArea.down();
+                } else if(event.key.keysym.sym == SDLK_BACKSPACE) { // User wants to either delete character on line or the line itself
+                    textArea.backspace();
+                } else if(event.key.keysym.sym == SDLK_LEFT) { // User wants to navigate left
+                    textArea.left();
+                } else if(event.key.keysym.sym == SDLK_RIGHT) { // User wants to navigate right
+                    textArea.right();
+                } else if(event.key.keysym.sym == SDLK_RETURN) { // User wants to create a new line
+                    textArea.newLine();
+                }
+                /* SHORTCUTS */
+                else if(event.key.keysym.sym == SDLK_s && SDL_GetModState() & KMOD_CTRL) { // User wants to save file
+                    textArea.save();
+                } else if(event.key.keysym.sym == SDLK_a && SDL_GetModState() & KMOD_CTRL) { // User wants to select all text
+                    textArea.selectAll();
+                }
+
+                if(!(event.key.keysym.sym == SDLK_a && SDL_GetModState() & KMOD_CTRL)) {
+                    textArea.removeSelection();
+                }
+            } else if(event.type == SDL_TEXTINPUT) {
+                if(!(SDL_GetModState() & KMOD_CTRL)) {
+                    textArea.inputText(event.text.text);
+                }
+            } else if(event.type == SDL_WINDOWEVENT) {
+                if(event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                    textArea.resizeWindow(event.window.data1, event.window.data2);
                 }
             }
 
             textArea.render();
-
-            SDL_Delay(10);
         }
 
         close();
