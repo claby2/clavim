@@ -77,7 +77,7 @@ int windowHeight = 480;
 int FONT_WIDTH;                               // Width of a single character of the font, defined later
 bool hasUnsavedChanges = false;               // Represents if the user has made changes to the file and has not saved
 bool isSelectingAll = false;                  // Represents if the user is selecting all due to shortcut
-bool hasRenderedOnce = false;                 // Represents if the editor has been rendered at least once
+bool forceRender = true;                      // Force render on start up despite no changes being made
 std::fstream file;                            // The file to be read and write
 std::string saveFilePath;                     // Place to read and then write
 std::string windowTitle = "clavim";           // Title of SDL2 window
@@ -135,7 +135,7 @@ void close() {
 Input existing content of file into text vector
 */
 void InputFileToText() {
-    file.open(saveFilePath.c_str(), std::ios::in); // Open in read mode
+    file.open(saveFilePath.c_str(), std::ios::in);
     std::string line;
     int lineNumber = 0;
     while(std::getline(file, line)) {
@@ -313,6 +313,7 @@ int main(int argc, char* args[]) {
                     if(event.window.event == SDL_WINDOWEVENT_RESIZED) {
                         windowWidth = event.window.data1;
                         windowHeight = event.window.data2;
+                        forceRender = true; // Force render the window with resized properties 
                     }
                 }
             }
@@ -321,9 +322,9 @@ int main(int argc, char* args[]) {
                 SDL_SetWindowTitle(gWindow, (windowTitle + '*').c_str());
             }
 
-            if(!hasRenderedOnce || (currentColumn != previousColumn || currentLine != previousLine || text != previousText)) {
+            if(forceRender || (currentColumn != previousColumn || currentLine != previousLine || text != previousText)) {
                 // Only executes if changes have been detected
-                hasRenderedOnce = true; // Exception: No changes have been detected on start up but elements still need to be rendered
+                forceRender = false; // Exception, render is executed if this is true
                 SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0x00);
                 SDL_RenderClear(gRenderer);
 
