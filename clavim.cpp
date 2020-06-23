@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <math.h>
 
 #ifdef _WIN32
 #include <direct.h>
@@ -84,11 +85,32 @@ std::string windowTitle = "clavim";           // Title of SDL2 window
 int currentLine = 0;                          // The line the user is currently on
 int currentColumn = 0;                        // The column the user is current on
 int currentTopLine = 0;                       // The line which is rendered at the top of the text
+int leftColumn = 0;                           // Column number of the column present at the start of the screen (without offset)
 std::vector<std::string> text = {""};         // Stores text of file, each string elements represents one line
 int previousLine;                             // Equal to current line at the start of the main loop to detect changes
 int previousColumn;                           // Equal to current column at the start of the main loop to detect changes
 std::vector<std::string> previousText = {""}; // Equal to text vector at the start of the main loop to detect changes
 
+class Cursor {
+    public:
+        int offset, x, y, width, height;
+
+        Cursor() {
+            width = fontWidth;
+            height = fontHeight;
+        }
+
+        void Update() {
+            offset = (fontWidth * (int)((std::to_string(text.size())).size())) + fontWidth;
+            x = offset + ((currentColumn - leftColumn) * fontWidth);
+            y = (currentLine * fontHeight) - (currentTopLine * fontHeight);
+        }
+
+        SDL_Rect GetRect() {
+            SDL_Rect cursorRect = {x, y, width, height};
+            return cursorRect;
+        }
+};
 
 /*
 Get current working directory
@@ -181,7 +203,10 @@ void RenderText() {
         (int)(currentTopLine + (windowHeight / fontHeight) + 1)
     );
     for(int i = currentTopLine; i < currentLastLine; i++) {
-        std::string line = std::string(((std::to_string(text.size())).size()) - (std::to_string(i + 1).size()), ' ') + std::to_string(i + 1) + ' ' +  text[i];
+        std::string lineContent = text[i];
+        lineContent.erase(0, leftColumn);
+
+        std::string line = std::string(((std::to_string(text.size())).size()) - (std::to_string(i + 1).size()), ' ') + std::to_string(i + 1) + ' ' +  lineContent;
         gTextSurface = TTF_RenderUTF8_Blended(gFont, line.c_str(), TEXT_COLOR);
         gTextTexture = SDL_CreateTextureFromSurface(gRenderer, gTextSurface);
         int width, height; // Height is not actually read later on
@@ -190,24 +215,31 @@ void RenderText() {
         SDL_RenderCopy(gRenderer, gTextTexture, NULL, &textRect);
         SDL_FreeSurface(gTextSurface);
         SDL_DestroyTexture(gTextTexture);
+
+        if(width > windowWidth) {
+            SDL_Rect endLineHighlight = {
+                windowWidth - fontWidth,
+                ((i * fontHeight) - (currentTopLine * fontHeight)),
+                fontWidth,
+                fontHeight
+            };
+            SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+            SDL_RenderDrawRect(gRenderer, &endLineHighlight);
+        }
     }
 }
 
 /*
 Render cursor
 */
-void RenderCursor() {
-    SDL_Rect cursor = {
-        (fontWidth * (int)((std::to_string(text.size())).size())) + fontWidth + (currentColumn * fontWidth),
-        (currentLine * fontHeight) - (currentTopLine * fontHeight),
-        fontWidth,
-        fontHeight
-    };
+void RenderCursor(Cursor &cursor) {
+    cursor.Update();
+    SDL_Rect cursorRect = cursor.GetRect();
     SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0x00, 0x00);
     if(currentColumn >= text[currentLine].length()) {
-        SDL_RenderFillRect(gRenderer, &cursor);   
+        SDL_RenderFillRect(gRenderer, &cursorRect);   
     }
-    SDL_RenderDrawRect(gRenderer, &cursor);
+    SDL_RenderDrawRect(gRenderer, &cursorRect);
 }
 
 /*
@@ -234,11 +266,14 @@ int main(int argc, char* args[]) {
         bool quit = false;
         SDL_Event event;
 
+        Cursor cursor;
+
         InputFileToText();
 
         windowTitle += (" - " + saveFilePath);
         SDL_SetWindowTitle(gWindow, windowTitle.c_str());
 
+        cursor.Update();
         while(!quit) {
             previousLine = currentLine;
             previousColumn = currentColumn;
@@ -266,11 +301,13 @@ int main(int argc, char* args[]) {
                             currentLine = 0;
                             text.clear();
                             text.push_back("");
+                            leftColumn = 0;
                         } else {
                             if(text[currentLine].length()) { // If there is at least one character in the line
                                 if(currentColumn) { // If there is a character before the cursor (which is to be deleted)
                                     text[currentLine].erase(text[currentLine].begin() + currentColumn - 1);
                                     currentColumn--;
+                                    leftColumn = std::min(currentColumn, leftColumn);
                                 }
                             } else if(text.size() > 1){ // If there is at least 2 lines, so the line before can be deleted
                                 text.erase(text.begin() + currentLine);
@@ -279,9 +316,18 @@ int main(int argc, char* args[]) {
                             }
                         }
                     } else if(event.key.keysym.sym == SDLK_LEFT) { // User wants to navigate left
-                        currentColumn = currentColumn - 1 >= 0 ? currentColumn - 1: 0;
+                    if(currentColumn - 1 >= 0) {
+                        currentColumn--;
+                        leftColumn = std::min(currentColumn, leftColumn);
+                    }
                     } else if(event.key.keysym.sym == SDLK_RIGHT) { // User wants to navigate right
-                        currentColumn = currentColumn < text[currentLine].length() ? currentColumn + 1 : currentColumn;
+                        if(currentColumn < text[currentLine].length()) {
+                            currentColumn++;
+                            cursor.Update();
+                            if(cursor.x >= windowWidth) {
+                                leftColumn++;
+                            }
+                        }
                     } else if(event.key.keysym.sym == SDLK_RETURN) { // User wants to create a new line
                         hasUnsavedChanges = true;
                         text.insert(text.begin() + currentLine + 1, "");
@@ -309,12 +355,20 @@ int main(int argc, char* args[]) {
                         hasUnsavedChanges = true;
                         text[currentLine].insert(currentColumn, event.text.text);
                         currentColumn++;
+                        cursor.Update();
+                        if(cursor.x >= windowWidth) {
+                            leftColumn++;
+                        }
                     }
                 } else if(event.type == SDL_WINDOWEVENT) {
                     if(event.window.event == SDL_WINDOWEVENT_RESIZED) {
                         windowWidth = event.window.data1;
                         windowHeight = event.window.data2;
                         forceRender = true; // Force render the window with resized properties 
+                        if(windowWidth < cursor.GetRect().x) {
+                            leftColumn = currentColumn - (windowWidth / fontWidth) + (cursor.offset / fontWidth) + 1;
+                        }
+                        leftColumn = std::min(currentColumn, leftColumn);
                     }
                 }
             }
@@ -331,7 +385,7 @@ int main(int argc, char* args[]) {
 
                 RenderLineHighlight();
                 RenderText();
-                RenderCursor();
+                RenderCursor(cursor);
 
                 SDL_RenderPresent(gRenderer);
             }
