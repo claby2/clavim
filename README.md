@@ -20,6 +20,7 @@ SDL2_ttf
 ```
 $ git clone https://github.com/claby2/clavim.git
 $ cd clavim
+$ cd src
 $ make compile
 ```
 2. Run clavim by specifying the path to the file you would like to edit (the following example opens `filename.txt`):
