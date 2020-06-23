@@ -124,8 +124,16 @@ bool TextArea::removeChar() {
         if(currentColumn) { // If there is a character before the cursor (which is to be deleted)
             text[currentLine].erase(text[currentLine].begin() + currentColumn - 1);
             return true;
+        } else {
+            if(currentLine) {
+                int lengthOfPreviousLine = text[currentLine - 1].length();
+                text[currentLine - 1] += text[currentLine];
+                text.erase(text.begin() + currentLine); // Erase currentline
+                setLine(currentLine - 1);
+                setColumn(lengthOfPreviousLine);
+            }
         }
-    } else if(text.size() > 1){ // If there is at least 2 lines, so the line before can be deleted
+    } else if(text.size() > 1){ // If there are at least 2 lines, so the line before can be deleted
         text.erase(text.begin() + currentLine);
         setLine(std::max(currentLine - 1, 0));
     }
