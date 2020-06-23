@@ -71,10 +71,10 @@ SDL_Surface* gTextSurface = NULL;
 SDL_Texture* gTextTexture = NULL;
 SDL_Color TEXT_COLOR = {255, 255, 255};
 
-int FONT_HEIGHT = 16;
 int windowWidth = 640;
 int windowHeight = 480;
-int FONT_WIDTH;                               // Width of a single character of the font, defined later
+int fontWidth;                                // Width of a single character of the font, defined later
+int fontHeight = 16;                          // Height of a single character of the font, redefined later
 bool hasUnsavedChanges = false;               // Represents if the user has made changes to the file and has not saved
 bool isSelectingAll = false;                  // Represents if the user is selecting all due to shortcut
 bool forceRender = true;                      // Force render on start up despite no changes being made
@@ -105,7 +105,7 @@ Initialize related to SDL2
 void init() {
     SDL_Init(SDL_INIT_VIDEO);
     TTF_Init();
-    gFont = TTF_OpenFont((ExePath() + dirSep + "SourceCodePro-Regular.ttf").c_str(), FONT_HEIGHT);
+    gFont = TTF_OpenFont((ExePath() + dirSep + "SourceCodePro-Regular.ttf").c_str(), fontHeight);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
     gWindow = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
     gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
@@ -113,8 +113,8 @@ void init() {
     char singleCharacter[] = " "; // A single character to measure font width (monospace)
     int width, height;
     TTF_SizeText(gFont, singleCharacter, &width, &height);
-    FONT_WIDTH = width;
-    FONT_HEIGHT = height;
+    fontWidth = width;
+    fontHeight = height; // Redefine height
 }
 
 /*
@@ -163,7 +163,7 @@ Given a line the user is working one and the line which appears at the top, high
 void RenderLineHighlight() {
     SDL_Rect highlight;
     if(!isSelectingAll) {
-        highlight = {0, (currentLine * FONT_HEIGHT) - (currentTopLine * FONT_HEIGHT), windowWidth, FONT_HEIGHT};
+        highlight = {0, (currentLine * fontHeight) - (currentTopLine * fontHeight), windowWidth, fontHeight};
     } else {
         highlight = {0, 0, windowWidth, windowHeight};
     }
@@ -178,15 +178,15 @@ Renders text
 void RenderText() {
     int currentLastLine = std::min(
         (int)text.size(), 
-        (int)(currentTopLine + (windowHeight / FONT_HEIGHT) + 1)
+        (int)(currentTopLine + (windowHeight / fontHeight) + 1)
     );
     for(int i = currentTopLine; i < currentLastLine; i++) {
         std::string line = std::string(((std::to_string(text.size())).size()) - (std::to_string(i + 1).size()), ' ') + std::to_string(i + 1) + ' ' +  text[i];
         gTextSurface = TTF_RenderUTF8_Blended(gFont, line.c_str(), TEXT_COLOR);
         gTextTexture = SDL_CreateTextureFromSurface(gRenderer, gTextSurface);
         int width, height; // Height is not actually read later on
-        TTF_SizeText(gFont, line.c_str(), &width, &height); // Use actual text size instead of FONT_WIDTH for extra precision
-        SDL_Rect textRect = {0, ((i * FONT_HEIGHT) - (currentTopLine * FONT_HEIGHT)), width, FONT_HEIGHT};
+        TTF_SizeText(gFont, line.c_str(), &width, &height); // Use actual text size instead of fontWidth for extra precision
+        SDL_Rect textRect = {0, ((i * fontHeight) - (currentTopLine * fontHeight)), width, fontHeight};
         SDL_RenderCopy(gRenderer, gTextTexture, NULL, &textRect);
         SDL_FreeSurface(gTextSurface);
         SDL_DestroyTexture(gTextTexture);
@@ -198,10 +198,10 @@ Render cursor
 */
 void RenderCursor() {
     SDL_Rect cursor = {
-        (FONT_WIDTH * (int)((std::to_string(text.size())).size())) + FONT_WIDTH + (currentColumn * FONT_WIDTH),
-        (currentLine * FONT_HEIGHT) - (currentTopLine * FONT_HEIGHT),
-        FONT_WIDTH,
-        FONT_HEIGHT
+        (fontWidth * (int)((std::to_string(text.size())).size())) + fontWidth + (currentColumn * fontWidth),
+        (currentLine * fontHeight) - (currentTopLine * fontHeight),
+        fontWidth,
+        fontHeight
     };
     SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0x00, 0x00);
     if(currentColumn >= text[currentLine].length()) {
@@ -214,14 +214,14 @@ void RenderCursor() {
 Returns if the currentLine value will mean the line would be out of the screen
 */
 bool ShouldIncreaseCurrentTopLine() {
-    return ((currentLine * FONT_HEIGHT) - (currentTopLine * FONT_HEIGHT) >= windowHeight);
+    return ((currentLine * fontHeight) - (currentTopLine * fontHeight) >= windowHeight);
 }
 
 /*
 Returns if the currentLine value will mean the line would be out of the screen
 */
 bool ShouldDecreaseCurrentTopLine() {
-    return ((currentLine * FONT_HEIGHT) - (currentTopLine * FONT_HEIGHT) < 0);
+    return ((currentLine * fontHeight) - (currentTopLine * fontHeight) < 0);
 }
 
 int main(int argc, char* args[]) {
@@ -298,6 +298,7 @@ int main(int argc, char* args[]) {
                         }
                     } else if(event.key.keysym.sym == SDLK_a && SDL_GetModState() & KMOD_CTRL) { // User wants to select all text
                         isSelectingAll = true;
+                        forceRender = true;
                     }
 
                     if(!(event.key.keysym.sym == SDLK_a && SDL_GetModState() & KMOD_CTRL)) {
