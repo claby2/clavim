@@ -1,3 +1,4 @@
 .vscode
 clavim.exe
 text.txt
+*.o
