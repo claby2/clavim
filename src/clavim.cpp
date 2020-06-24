@@ -17,6 +17,13 @@ void setFromPreferences() {
     if(preferencesMap.find("window_width")        != preferencesMap.end()) windowWidth       = std::stoi(preferencesMap["window_width"]       );
     if(preferencesMap.find("window_height")       != preferencesMap.end()) windowHeight      = std::stoi(preferencesMap["window_height"]      );
     if(preferencesMap.find("full_line_highlight") != preferencesMap.end()) fullLineHighlight = std::stoi(preferencesMap["full_line_highlight"]);
+    if(preferencesMap.find("cursor_color")        != preferencesMap.end()) {
+        CURSOR_COLOR = {
+            (uint8_t)std::stoi(preferencesMap["cursor_color"].substr(1, 2), nullptr, 16),
+            (uint8_t)std::stoi(preferencesMap["cursor_color"].substr(3, 2), nullptr, 16),
+            (uint8_t)std::stoi(preferencesMap["cursor_color"].substr(5, 2), nullptr, 16)
+        };
+    }
 }
 
 /*

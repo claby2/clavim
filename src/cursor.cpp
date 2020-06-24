@@ -3,6 +3,8 @@
 #include <SDL2/SDL.h>
 #include <string>
 
+#include <iostream>
+
 Cursor::Cursor() {
     width = fontWidth;
     height = fontHeight;
@@ -21,7 +23,7 @@ SDL_Rect Cursor::getRect() {
 
 void Cursor::render(int currentColumn, int lineLength) {
     SDL_Rect cursorRect = getRect();
-    SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0x00, 0x00);
+    SDL_SetRenderDrawColor(gRenderer, CURSOR_COLOR.r, CURSOR_COLOR.g, CURSOR_COLOR.b, 0x00);
     if(currentColumn >= lineLength) {
         SDL_RenderFillRect(gRenderer, &cursorRect);   
     }
