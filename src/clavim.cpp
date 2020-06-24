@@ -53,7 +53,10 @@ int main(int argc, char* args[]) {
     if(args[1]) {
         saveFilePath = pwd() + dirSep + args[1];
         file.open(saveFilePath.c_str());
-        if(!file) std::ofstream file {saveFilePath};
+        if(!file) { 
+            std::ofstream file {saveFilePath};
+            std::cout << "\"" << args[1] << "\" [New File] has been created\n";
+        }
         file.close();
         init();
         bool quit = false;
