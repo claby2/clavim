@@ -9,7 +9,7 @@ extern std::fstream preferences;
 /*
 Returns string without space character(s)
 */
-std::string getFilteredString(std::string str);
+std::string getFilteredString(std::string s);
 
 /*
 Returns if the string only has digits (0123456789)
