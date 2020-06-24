@@ -36,6 +36,8 @@ After this is done, changes should be reflected the next time clavim is run.
 If an invalid value is detected (based on a custom validity check), a warning should be written to standard output.
 In this case, any preference with an invalid value would be ignored and the default value would be used instead. 
 
+To change the font clavim uses, add the `.ttf` file to the `src` directory and change the `font` preference in `src/preferences.ini` to the name of the font file.
+
 ### Keybinds
 | Key                                               | Action                                                      |
 |---------------------------------------------------|-------------------------------------------------------------|
