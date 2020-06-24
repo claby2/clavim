@@ -28,6 +28,14 @@ $ make compile
 $ clavim filename.txt
 ```
 
+### Preferences
+
+Optionally, you can set your own preferences to alter the way clavim looks and behaves in `src/preferences.ini`.
+Simply change a certain preference in `src/preferences.ini` and save the file.
+After this is done, changes should be reflected the next time clavim is run.
+If an invalid value is detected (based on a custom validity check), a warning should be written to standard output.
+In this case, any preference with an invalid value would be ignored and the default value would be used instead. 
+
 ### Keybinds
 | Key                                               | Action                                                      |
 |---------------------------------------------------|-------------------------------------------------------------|
