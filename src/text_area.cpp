@@ -95,7 +95,7 @@ void TextArea::renderText() {
 }
 
 bool TextArea::shouldIncreaseCurrentTopLine() {
-    return ((currentLine * fontHeight) - (currentTopLine * fontHeight) >= windowHeight);
+    return (((currentLine * fontHeight) + fontHeight) - (currentTopLine * fontHeight) >= windowHeight);
 }
 
 bool TextArea::shouldDecreaseCurrentTopLine() {
@@ -212,6 +212,9 @@ void TextArea::resizeWindow(int newWidth, int newHeight) {
         leftColumn = currentColumn - (windowWidth / fontWidth) + (cursor.offset / fontWidth) + 1;
     }
     leftColumn = std::min(currentColumn, leftColumn);
+    if(shouldDecreaseCurrentTopLine() || shouldIncreaseCurrentTopLine()) {
+        currentTopLine = currentLine - (int)(windowHeight / fontHeight);
+    }
 }
 
 void TextArea::setPrevious() {
