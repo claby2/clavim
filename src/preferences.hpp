@@ -22,6 +22,11 @@ Returns if the string only has hex symbols (#0123456789ABCDEFabcdef)
 bool hasOnlyHexSymbols(std::string s);
 
 /*
+Erases element from map if value is not a positive number, returns true if element was erased, returns false if element was not erased
+*/
+bool eraseIfNotValidNumber(std::map<std::string, std::string> &preferencesMap, std::string key);
+
+/*
 Filters the preferences map, removes any elements which are invalid
 */
 void filterPreferencesMap(std::map<std::string, std::string> &preferencesMap);

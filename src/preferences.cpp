@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <map>
+#include <vector>
 #include <iostream>
 
 std::fstream preferences;
@@ -23,38 +24,40 @@ bool hasOnlyHexSymbols(std::string s) {
     return s.find_first_not_of("#0123456789ABCDEFabcdef") == std::string::npos;
 }
 
-void filterPreferencesMap(std::map<std::string, std::string> &preferencesMap) {
-    if(preferencesMap.find("window_width") != preferencesMap.end()) {
-        if(!hasOnlyDigits(preferencesMap["window_width"])) {
-            preferencesMap.erase("window_width");
-            std::cout << "window_width value is invalid\n";
+bool eraseIfNotValidNumber(std::map<std::string, std::string> &preferencesMap, std::string key) {
+    if(preferencesMap.find(key) != preferencesMap.end()) {
+        if(!hasOnlyDigits(preferencesMap[key])) {
+            preferencesMap.erase(key);
+            return true;
         }
     }
-    if(preferencesMap.find("window_height") != preferencesMap.end()) {
-        if(!hasOnlyDigits(preferencesMap["window_height"])) {
-            preferencesMap.erase("window_height");
-            std::cout << "window_height value is invalid\n";
-        }
-    }
-    if(preferencesMap.find("full_line_highlight") != preferencesMap.end()) {
-        if(!hasOnlyDigits(preferencesMap["full_line_highlight"])) {
-            preferencesMap.erase("full_line_highlight");
-            std::cout << "full_line_highlight value is invalid\n";
-        }
-    }
-    if(preferencesMap.find("cursor_color") != preferencesMap.end()) {
-        std::string cursorColor = preferencesMap["cursor_color"];
+    return false;
+}
+
+bool eraseIfNotValidColor(std::map<std::string, std::string> &preferencesMap, std::string key) {
+    if(preferencesMap.find(key) != preferencesMap.end()) {
+        std::string cursorColor = preferencesMap[key];
         if(!hasOnlyHexSymbols(cursorColor) || cursorColor.length() != 7 || cursorColor[0] != '#') {
-            preferencesMap.erase("cursor_color");
-            std::cout << "cursor_color value is invalid\n";
+            preferencesMap.erase(key);
+            return true;
         }
     }
-    if(preferencesMap.find("line_highlight_color") != preferencesMap.end()) {
-        std::string lineHighlightColor = preferencesMap["line_highlight_color"];
-        if(!hasOnlyHexSymbols(lineHighlightColor) || lineHighlightColor.length() != 7 || lineHighlightColor[0] != '#') {
-            preferencesMap.erase("line_highlight_color");
-            std::cout << "line_highlight_color value is invalid\n";
+    return false;
+}
+
+void filterPreferencesMap(std::map<std::string, std::string> &preferencesMap) {
+    std::vector<std::string> invalidPropertyNames;
+    if(eraseIfNotValidNumber(preferencesMap, "window_width")) invalidPropertyNames.push_back("window_width");
+    if(eraseIfNotValidNumber(preferencesMap, "window_height")) invalidPropertyNames.push_back("window_height");
+    if(eraseIfNotValidNumber(preferencesMap, "full_line_highlight")) invalidPropertyNames.push_back("full_line_highlight");
+    if(eraseIfNotValidColor(preferencesMap, "cursor_color")) invalidPropertyNames.push_back("cursor_color");
+    if(eraseIfNotValidColor(preferencesMap, "line_highlight_color")) invalidPropertyNames.push_back("line_highlight_color");
+    if(invalidPropertyNames.size() > 0) {
+        std::cout << "WARN: The following preference(s) have not been properly defined in preferences.ini:\n\n";
+        for(int i = 0; i < invalidPropertyNames.size(); i++) {
+            std::cout << "\t- " << invalidPropertyNames[i] << "\n";
         }
+        std::cout << "\nThe default values for these properties have been used instead.\n";
     }
 }
 
