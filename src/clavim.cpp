@@ -54,15 +54,11 @@ int main(int argc, char* args[]) {
         saveFilePath = pwd() + dirSep + args[1];
         file.open(saveFilePath.c_str());
         if(!file) std::ofstream file {saveFilePath};
-
         file.close();
         init();
-
         bool quit = false;
         SDL_Event event;
-
         TextArea textArea;
-
         windowTitle += (" - " + saveFilePath);
         SDL_SetWindowTitle(gWindow, windowTitle.c_str());
 
@@ -110,7 +106,7 @@ int main(int argc, char* args[]) {
 
         close();
     } else {
-        std::cout << "File not valid, please specify a file to edit\n";
+        std::cout << "Please specify a file to edit\n";
     }
     return 0;
 
