@@ -23,7 +23,7 @@ $ cd clavim
 $ cd src
 $ make compile
 ```
-2. Run clavim by specifying the path to the file you would like to edit (the following example opens `filename.txt`):
+2. Run clavim by specifying the path to the file you would like to edit (a file will be created if it does not already exist):
 ```
 $ clavim filename.txt
 ```
