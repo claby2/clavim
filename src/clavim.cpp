@@ -14,8 +14,9 @@ Set variables based on preferences
 */
 void setFromPreferences() {
     std::map<std::string, std::string> preferencesMap = getPreferencesMap(exePath() + dirSep + "preferences.ini");
-    if(preferencesMap.find("window_width") != preferencesMap.end()) windowWidth = std::stoi(preferencesMap["window_width"]);
-    if(preferencesMap.find("window_height") != preferencesMap.end()) windowHeight = std::stoi(preferencesMap["window_height"]);
+    if(preferencesMap.find("window_width")        != preferencesMap.end()) windowWidth       = std::stoi(preferencesMap["window_width"]       );
+    if(preferencesMap.find("window_height")       != preferencesMap.end()) windowHeight      = std::stoi(preferencesMap["window_height"]      );
+    if(preferencesMap.find("full_line_highlight") != preferencesMap.end()) fullLineHighlight = std::stoi(preferencesMap["full_line_highlight"]);
 }
 
 /*

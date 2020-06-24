@@ -38,7 +38,11 @@ void TextArea::save() { // SaveTextToFile
 void TextArea::renderLineHighlight() {
     SDL_Rect highlight;
     if(!isSelectingAll) {
-        highlight = {0, (currentLine * fontHeight) - (currentTopLine * fontHeight), windowWidth, fontHeight};
+        if(fullLineHighlight) {
+            highlight = {0, (currentLine * fontHeight) - (currentTopLine * fontHeight), windowWidth, fontHeight};
+        } else {
+            highlight = {0, (currentLine * fontHeight) - (currentTopLine * fontHeight), cursor.offset, fontHeight};
+        }
     } else {
         highlight = {0, 0, windowWidth, windowHeight};
     }

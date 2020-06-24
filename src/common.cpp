@@ -17,3 +17,4 @@ int fontHeight = 16;                          // Height of a single character of
 std::fstream file;                            // The file to be read and write
 std::string saveFilePath;                     // Place to read and then write
 std::string windowTitle = "clavim";           // Title of SDL2 window
+bool fullLineHighlight = true;                // Default representation of if the entire line should be highlighted or only the line number
