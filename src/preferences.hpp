@@ -7,7 +7,7 @@
 extern std::fstream preferences;
 
 /*
-Returns string without space character(s)
+Returns string without space and double quotation character(s)
 */
 std::string getFilteredString(std::string s);
 
