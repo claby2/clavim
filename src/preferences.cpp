@@ -36,8 +36,8 @@ bool eraseIfNotValidNumber(std::map<std::string, std::string> &preferencesMap, s
 
 bool eraseIfNotValidColor(std::map<std::string, std::string> &preferencesMap, std::string key) {
     if(preferencesMap.find(key) != preferencesMap.end()) {
-        std::string cursorColor = preferencesMap[key];
-        if(!hasOnlyHexSymbols(cursorColor) || cursorColor.length() != 7 || cursorColor[0] != '#') {
+        std::string color = preferencesMap[key];
+        if(!hasOnlyHexSymbols(color) || color.length() != 7 || color[0] != '#') {
             preferencesMap.erase(key);
             return true;
         }
@@ -45,13 +45,27 @@ bool eraseIfNotValidColor(std::map<std::string, std::string> &preferencesMap, st
     return false;
 }
 
-void filterPreferencesMap(std::map<std::string, std::string> &preferencesMap) {
+bool eraseIfNotValidFile(std::map<std::string, std::string> &preferencesMap, std::string key, std::string filePath) {
+    if(preferencesMap.find(key) != preferencesMap.end()) {
+        std::string fullFilePath = filePath + preferencesMap[key];
+        if(FILE *file = fopen(fullFilePath.c_str(), "r")) {
+            fclose(file);
+        } else {
+            preferencesMap.erase(key);
+            return true;
+        }
+    }
+    return false;
+}
+
+void filterPreferencesMap(std::map<std::string, std::string> &preferencesMap, std::string filePath) {
     std::vector<std::string> invalidPropertyNames;
     if(eraseIfNotValidNumber(preferencesMap, "window_width")) invalidPropertyNames.push_back("window_width");
     if(eraseIfNotValidNumber(preferencesMap, "window_height")) invalidPropertyNames.push_back("window_height");
     if(eraseIfNotValidNumber(preferencesMap, "full_line_highlight")) invalidPropertyNames.push_back("full_line_highlight");
     if(eraseIfNotValidColor(preferencesMap, "cursor_color")) invalidPropertyNames.push_back("cursor_color");
     if(eraseIfNotValidColor(preferencesMap, "line_highlight_color")) invalidPropertyNames.push_back("line_highlight_color");
+    if(eraseIfNotValidFile(preferencesMap, "font", filePath)) invalidPropertyNames.push_back("font");
     if(invalidPropertyNames.size() > 0) {
         std::cout << "WARN: The following preference(s) have not been properly defined in preferences.ini:\n\n";
         for(int i = 0; i < invalidPropertyNames.size(); i++) {
@@ -74,6 +88,5 @@ std::map<std::string, std::string> getPreferencesMap(std::string preferencesFile
         }
     }
     preferences.close();
-    filterPreferencesMap(preferencesMap);
     return preferencesMap;
 }

@@ -20,6 +20,7 @@ extern int fontHeight;
 extern std::fstream file;
 extern std::string saveFilePath;
 extern std::string windowTitle;
+extern std::string fontName;
 extern bool fullLineHighlight;
 
 #endif

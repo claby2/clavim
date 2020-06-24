@@ -14,6 +14,7 @@ Set variables based on preferences
 */
 void setFromPreferences() {
     std::map<std::string, std::string> preferencesMap = getPreferencesMap(exePath() + dirSep + "preferences.ini");
+    filterPreferencesMap(preferencesMap, (exePath() + dirSep));
     if(preferencesMap.find("window_width")         != preferencesMap.end()) windowWidth       = std::stoi(preferencesMap["window_width"]       );
     if(preferencesMap.find("window_height")        != preferencesMap.end()) windowHeight      = std::stoi(preferencesMap["window_height"]      );
     if(preferencesMap.find("full_line_highlight")  != preferencesMap.end()) fullLineHighlight = std::stoi(preferencesMap["full_line_highlight"]);
@@ -24,6 +25,7 @@ void setFromPreferences() {
             (uint8_t)std::stoi(preferencesMap["line_highlight_color"].substr(5, 2), nullptr, 16)
         };
     }
+    if(preferencesMap.find("font")                 != preferencesMap.end()) fontName = preferencesMap["font"];
     if(preferencesMap.find("cursor_color")         != preferencesMap.end()) {
         CURSOR_COLOR = {
             (uint8_t)std::stoi(preferencesMap["cursor_color"].substr(1, 2), nullptr, 16),
@@ -48,7 +50,7 @@ Initialize related to SDL2
 void init() {
     SDL_Init(SDL_INIT_VIDEO);
     TTF_Init();
-    gFont = TTF_OpenFont((exePath() + dirSep + "SourceCodePro-Regular.ttf").c_str(), fontHeight);
+    gFont = TTF_OpenFont((exePath() + dirSep + fontName).c_str(), fontHeight);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
     gWindow = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
     gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
