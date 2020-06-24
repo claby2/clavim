@@ -11,6 +11,7 @@ extern SDL_Surface* gTextSurface;
 extern SDL_Texture* gTextTexture;
 extern SDL_Color TEXT_COLOR;
 extern SDL_Color CURSOR_COLOR;
+extern SDL_Color LINE_HIGHLIGHT_COLOR;
 
 extern int windowWidth;
 extern int windowHeight;

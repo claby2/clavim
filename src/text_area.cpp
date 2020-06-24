@@ -46,7 +46,7 @@ void TextArea::renderLineHighlight() {
     } else {
         highlight = {0, 0, windowWidth, windowHeight};
     }
-    SDL_SetRenderDrawColor(gRenderer, 0x21, 0x21, 0x21, 0xFF);
+    SDL_SetRenderDrawColor(gRenderer, LINE_HIGHLIGHT_COLOR.r, LINE_HIGHLIGHT_COLOR.g, LINE_HIGHLIGHT_COLOR.b, 0xFF);
     SDL_RenderFillRect(gRenderer, &highlight);
     SDL_RenderDrawRect(gRenderer, &highlight);
 }

@@ -2,7 +2,6 @@
 #include <fstream>
 #include <string>
 #include <map>
-
 #include <iostream>
 
 std::fstream preferences;
@@ -48,6 +47,13 @@ void filterPreferencesMap(std::map<std::string, std::string> &preferencesMap) {
         if(!hasOnlyHexSymbols(cursorColor) || cursorColor.length() != 7 || cursorColor[0] != '#') {
             preferencesMap.erase("cursor_color");
             std::cout << "cursor_color value is invalid\n";
+        }
+    }
+    if(preferencesMap.find("line_highlight_color") != preferencesMap.end()) {
+        std::string lineHighlightColor = preferencesMap["line_highlight_color"];
+        if(!hasOnlyHexSymbols(lineHighlightColor) || lineHighlightColor.length() != 7 || lineHighlightColor[0] != '#') {
+            preferencesMap.erase("line_highlight_color");
+            std::cout << "line_highlight_color value is invalid\n";
         }
     }
 }
