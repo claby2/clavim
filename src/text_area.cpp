@@ -7,6 +7,8 @@
 #include <string>
 #include <fstream>
 
+#include <iostream>
+
 TextArea::TextArea() {
     // Input existing content of file into text vector
     file.open(saveFilePath.c_str(), std::ios::in);
@@ -98,9 +100,11 @@ bool TextArea::shouldDecreaseCurrentTopLine() {
     return ((currentLine * fontHeight) - (currentTopLine * fontHeight) < 0);
 }
 
-void TextArea::setColumn(int newValue) {
-    newValue = std::max(newValue, 0);
-    newValue = std::min(newValue, (int)text[currentLine].length());
+void TextArea::setColumn(int newValue, bool forceNewValue = false) {
+    if(!forceNewValue) {
+        newValue = std::max(newValue, 0);
+        newValue = std::min(newValue, (int)text[currentLine].length());
+    }
     currentColumn = newValue;
     leftColumn = std::min(currentColumn, leftColumn);
     cursor.update(currentLine, currentColumn, leftColumn, currentTopLine, text.size());
@@ -109,9 +113,9 @@ void TextArea::setColumn(int newValue) {
     }
 }
 
-void TextArea::setLine(int newValue) {
+void TextArea::setLine(int newValue, bool forceNewValue = false) {
     if(newValue >= 0 && newValue + 1 <= text.size()) {
-        setColumn(std::min(static_cast<int>(text[newValue].length()), currentColumn));
+        if(!forceNewValue) setColumn(std::min(static_cast<int>(text[newValue].length()), currentColumn));
         currentLine = newValue;
         if(shouldDecreaseCurrentTopLine()) currentTopLine--;
         else if(shouldIncreaseCurrentTopLine()) currentTopLine++;                
@@ -128,14 +132,15 @@ bool TextArea::removeChar() {
             if(currentLine) {
                 // Concatenate the contents of current line to the end of the previous line and delete current line
                 text[currentLine - 1] += text[currentLine];
-                setColumn(text[currentLine - 1].length());
+                setColumn(text[currentLine - 1].length() - 1, true);
                 text.erase(text.begin() + currentLine); // Erase current line
-                setLine(currentLine - 1);
+                setLine(currentLine - 1, true);
             }
         }
     } else if(text.size() > 1){ // If there are at least 2 lines, it means the current line can be deleted
+        setColumn(text[currentLine - 1].length(), true);
         text.erase(text.begin() + currentLine); // Erase current line
-        setLine(currentLine - 1);
+        setLine(currentLine - 1, true);
     }
     return false;
 }
@@ -159,11 +164,11 @@ void TextArea::right() {
 void TextArea::backspace() {
     hasUnsavedChanges = true;
     if(isSelectingAll) { // If the user is selecting entire text
-        currentColumn = 0;
-        currentLine = 0;
+        setColumn(0);
+        setLine(0);
+        currentTopLine = 0;
         text.clear();
         text.push_back("");
-        leftColumn = 0;
     } else {
         if(removeChar()) left();
     }

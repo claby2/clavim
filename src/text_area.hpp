@@ -50,15 +50,15 @@ class TextArea {
         /*
         Set current column to a new value while taking bounds into account, also updates cursor
         */
-        void setColumn(int newValue);
+        void setColumn(int newValue, bool forceNewValue);
 
         /*
         Set current line to a new value while taking bounds,top line and column into account, also updates cursor
         */
-        void setLine(int newValue);
+        void setLine(int newValue, bool forceNewValue);
 
         /*
-        Remove a char before current column, returns true if char has been deleted, returns false if line has been deleted
+        Remove a char before current column, returns true if char has been deleted, returns false otherwise
         */
         bool removeChar();
 
