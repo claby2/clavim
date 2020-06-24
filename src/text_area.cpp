@@ -7,8 +7,6 @@
 #include <string>
 #include <fstream>
 
-#include <iostream>
-
 TextArea::TextArea() {
     // Input existing content of file into text vector
     file.open(saveFilePath.c_str(), std::ios::in);
