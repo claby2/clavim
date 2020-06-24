@@ -1,5 +1,6 @@
 #define SDL_MAIN_HANDLED
 
+#include "preferences.hpp"
 #include "common.hpp"
 #include "text_area.hpp"
 #include "cursor.hpp"
@@ -7,6 +8,15 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <iostream>
+
+/*
+Set variables based on preferences
+*/
+void setFromPreferences() {
+    std::map<std::string, std::string> preferencesMap = getPreferencesMap(exePath() + dirSep + "preferences.ini");
+    if(preferencesMap.find("window_width") != preferencesMap.end()) windowWidth = std::stoi(preferencesMap["window_width"]);
+    if(preferencesMap.find("window_height") != preferencesMap.end()) windowHeight = std::stoi(preferencesMap["window_height"]);
+}
 
 /*
 Get current working directory
@@ -50,6 +60,8 @@ void close() {
 }
 
 int main(int argc, char* args[]) {
+    setFromPreferences();
+
     if(args[1]) {
         saveFilePath = pwd() + dirSep + args[1];
         file.open(saveFilePath.c_str());

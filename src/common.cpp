@@ -10,8 +10,8 @@ SDL_Surface* gTextSurface = NULL;
 SDL_Texture* gTextTexture = NULL;
 SDL_Color TEXT_COLOR = {255, 255, 255};
 
-int windowWidth = 640;
-int windowHeight = 480;
+int windowWidth = 640;                        // Default width of window if not specified in preferences.ini
+int windowHeight = 480;                       // Default height of window if not specified in preferences.ini
 int fontWidth;                                // Width of a single character of the font, defined later
 int fontHeight = 16;                          // Height of a single character of the font, redefined later
 std::fstream file;                            // The file to be read and write
