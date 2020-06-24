@@ -50,9 +50,11 @@ void close() {
 }
 
 int main(int argc, char* args[]) {
-    if(args[1]) saveFilePath = pwd() + dirSep + args[1];
-    file.open(saveFilePath.c_str());
-    if(file) {
+    if(args[1]) {
+        saveFilePath = pwd() + dirSep + args[1];
+        file.open(saveFilePath.c_str());
+        if(!file) std::ofstream file {saveFilePath};
+
         file.close();
         init();
 
