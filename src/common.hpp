@@ -17,6 +17,7 @@ extern int windowWidth;
 extern int windowHeight;
 extern int fontWidth;
 extern int fontHeight;
+extern int spacesPerTab;
 extern std::fstream file;
 extern std::string saveFilePath;
 extern std::string windowTitle;

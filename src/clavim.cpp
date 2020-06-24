@@ -27,6 +27,7 @@ void setFromPreferences() {
     }
     if(preferencesMap.find("font")                 != preferencesMap.end()) fontName = preferencesMap["font"];
     if(preferencesMap.find("font_size")            != preferencesMap.end()) fontHeight = std::stoi(preferencesMap["font_size"]);
+    if(preferencesMap.find("spaces_per_tab")       != preferencesMap.end()) spacesPerTab = std::stoi(preferencesMap["spaces_per_tab"]);
     if(preferencesMap.find("cursor_color")         != preferencesMap.end()) {
         CURSOR_COLOR = {
             (uint8_t)std::stoi(preferencesMap["cursor_color"].substr(1, 2), nullptr, 16),
@@ -114,7 +115,7 @@ int main(int argc, char* args[]) {
                 } else if(event.key.keysym.sym == SDLK_RETURN) { // User wants to create a new line
                     textArea.newLine();
                 } else if(event.key.keysym.sym == SDLK_TAB) {
-                    textArea.inputText("    ");
+                    textArea.inputText(std::string(spacesPerTab, ' '));
                 }
                 /* SHORTCUTS */
                 else if(event.key.keysym.sym == SDLK_s && SDL_GetModState() & KMOD_CTRL) { // User wants to save file

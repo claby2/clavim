@@ -16,8 +16,9 @@ int windowWidth = 640;                              // Default width of window i
 int windowHeight = 480;                             // Default height of window if not specified in preferences.ini
 int fontWidth;                                      // Width of a single character of the font, defined later
 int fontHeight = 16;                                // Height of a single character of the font, redefined later
+int spacesPerTab = 4;                               // Default number of spaces created per tab if not specified in preferences.ini
 std::fstream file;                                  // The file to be read and write
 std::string saveFilePath;                           // Place to read and then write
 std::string windowTitle = "clavim";                 // Title of SDL2 window
-std::string fontName = "SourceCodePro-Regular.ttf"; // Default font
+std::string fontName = "SourceCodePro-Regular.ttf"; // Default font if not specified in preferences.ini
 bool fullLineHighlight = false;                     // Default representation of if the entire line should be highlighted if not specified in preferences.ini

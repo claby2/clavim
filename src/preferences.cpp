@@ -64,6 +64,7 @@ void filterPreferencesMap(std::map<std::string, std::string> &preferencesMap, st
     if(eraseIfNotValidNumber(preferencesMap, "window_height")) invalidPropertyNames.push_back("window_height");
     if(eraseIfNotValidNumber(preferencesMap, "full_line_highlight")) invalidPropertyNames.push_back("full_line_highlight");
     if(eraseIfNotValidNumber(preferencesMap, "font_size")) invalidPropertyNames.push_back("font_size");
+    if(eraseIfNotValidNumber(preferencesMap, "spaces_per_tab")) invalidPropertyNames.push_back("spaces_per_tab");
     if(eraseIfNotValidColor(preferencesMap, "cursor_color")) invalidPropertyNames.push_back("cursor_color");
     if(eraseIfNotValidColor(preferencesMap, "line_highlight_color")) invalidPropertyNames.push_back("line_highlight_color");
     if(eraseIfNotValidFile(preferencesMap, "font", filePath)) invalidPropertyNames.push_back("font");
