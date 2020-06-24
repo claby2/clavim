@@ -113,6 +113,8 @@ int main(int argc, char* args[]) {
                     textArea.right();
                 } else if(event.key.keysym.sym == SDLK_RETURN) { // User wants to create a new line
                     textArea.newLine();
+                } else if(event.key.keysym.sym == SDLK_TAB) {
+                    textArea.inputText("    ");
                 }
                 /* SHORTCUTS */
                 else if(event.key.keysym.sym == SDLK_s && SDL_GetModState() & KMOD_CTRL) { // User wants to save file

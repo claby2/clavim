@@ -201,7 +201,7 @@ void TextArea::removeSelection() {
 void TextArea::inputText(std::string eventText) {
     hasUnsavedChanges = true;
     text[currentLine].insert(currentColumn, eventText);
-    right();
+    setColumn(currentColumn + eventText.length()); // Set column based on eventText length, eg. if eventText is a tab (4 spaces)
 }
 
 void TextArea::resizeWindow(int newWidth, int newHeight) {
