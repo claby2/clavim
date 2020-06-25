@@ -50,3 +50,15 @@ To change the font clavim uses, add the `.ttf` file to the `src` directory and c
 | "Tab" (the Tab key)                               | Create indentation of four spaces                           |
 | "Ctrl" + "S"                                      | Save changes to file                                        |
 | "Ctrl" + "A"                                      | Select all text                                             |
+
+## Testing
+
+Testing requires [Catch2](https://github.com/catchorg/Catch2/).
+In the `tests` directory, compile with:
+```
+$ make compile
+```
+Run the tests with:
+```
+$ make test
+```
