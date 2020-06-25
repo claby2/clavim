@@ -124,7 +124,7 @@ void TextArea::setColumn(int newValue, bool forceNewValue = false) {
     leftColumn = std::min(currentColumn, leftColumn);
     cursor.update(currentLine, currentColumn, leftColumn, currentTopLine, text.size());
     if(cursor.getRect().x >= windowWidth) {
-        leftColumn++;
+        leftColumn = currentColumn - (windowWidth / fontWidth) + (cursor.offset / fontWidth) + 1;
     }
 }
 
@@ -214,7 +214,7 @@ void TextArea::removeSelection() {
 void TextArea::inputText(std::string eventText) {
     hasUnsavedChanges = true;
     text[currentLine].insert(currentColumn, eventText);
-    setColumn(currentColumn + eventText.length()); // Set column based on eventText length, eg. if eventText is a tab
+    setColumn(currentColumn + eventText.length(), true); // Set column based on eventText length, eg. if eventText is a tab
 }
 
 void TextArea::resizeWindow(int newWidth, int newHeight) {
