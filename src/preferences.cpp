@@ -52,7 +52,7 @@ bool hasOnlyHexSymbols(std::string s) {
 bool eraseIfNotValidNumber(std::map<std::string, std::string> &preferencesMap, std::string key) {
     if(preferencesMap.find(key) != preferencesMap.end()) {
         std::string value = preferencesMap[key];
-        if(!hasOnlyDigits(value) || value.empty()) {
+        if(!hasOnlyDigits(value) || value.empty() || (key == "spaces_per_tab" && std::stoi(value) < 1)) {
             preferencesMap.erase(key);
             return true;
         }
@@ -110,7 +110,7 @@ void filterPreferencesMap(std::map<std::string, std::string> &preferencesMap, st
             (preference.type == "lineNumberMode" && eraseIfNotValidLineNumberMode(preferencesMap, preference.name)) ||
             (preference.type == "file"   && eraseIfNotValidFile  (preferencesMap, preference.name, filePath))) {
             invalidPreferences.push_back(preference.name);
-        }   
+        }
     }
     if(invalidPreferences.size() > 0) {
         std::cout << "WARN: The following preferences have not been properly defined in preferences.ini:\n\n";
