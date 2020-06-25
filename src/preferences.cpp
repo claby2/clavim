@@ -23,8 +23,20 @@ Preference recognizedPreferences[] = {
 std::string getFilteredString(std::string s) {
     std::string output;
     output.reserve(s.size());
+    bool foundQuote = false; // If found an opening quote char
     for(size_t i = 0; i < s.size(); i++) {
-        if(s[i] != ' ' && s[i] != '\"') output += s[i];
+        if(foundQuote) {
+            if(s[i] == '\"') {
+                foundQuote = false;
+            } else {
+                output += s[i];
+            }
+        } else {
+            if(s[i] == '\"') {
+                foundQuote = true;
+            }
+            if(!isspace(s[i]) && s[i] != '\"') output += s[i];
+        }
     }
     return output;
 }
@@ -77,7 +89,8 @@ bool eraseIfNotValidLineNumberMode(std::map<std::string, std::string> &preferenc
 bool eraseIfNotValidFile(std::map<std::string, std::string> &preferencesMap, std::string key, std::string filePath) {
     if(preferencesMap.find(key) != preferencesMap.end()) {
         std::string fullFilePath = filePath + preferencesMap[key];
-        if(FILE *file = fopen(fullFilePath.c_str(), "r")) {
+        FILE *file = fopen(fullFilePath.c_str(), "r");
+        if(file) {
             fclose(file);
         } else {
             preferencesMap.erase(key);
@@ -113,13 +126,18 @@ std::map<std::string, std::string> getPreferencesMap(std::string preferencesFile
     preferences.open(preferencesFilePath.c_str(), std::ios::in);
     std::string line;
     while(std::getline(preferences, line)) {
-        if(line[0] != ';' && line[0] != '#' && line[0] != '[' && !line.empty()) {
-            line = line.substr(0, line.find("#"));
-            line = line.substr(0, line.find(";"));
-            std::size_t delimiter = line.find("=");
-            std::string name = getFilteredString(line.substr(0, delimiter));
-            std::string value = getFilteredString(line.substr(delimiter + 1, line.length()));
-            preferencesMap[name] = value;
+        if(!line.empty() && line[0] != ';' && line[0] != '#' && line[0] != '[') {
+            std::size_t delimiter;
+            delimiter = line.find("#");
+            if(delimiter != std::string::npos) line = line.substr(0, delimiter);
+            delimiter = line.find(";");
+            if(delimiter != std::string::npos) line = line.substr(0, delimiter);
+            delimiter = line.find("=");
+            if(delimiter != std::string::npos) {
+                std::string name = getFilteredString(line.substr(0, delimiter));
+                std::string value = getFilteredString(line.substr(delimiter + 1, line.length()));
+                preferencesMap[name] = value;
+            }
         }
     }
     preferences.close();

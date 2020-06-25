@@ -33,7 +33,10 @@ TEST_CASE( "Preferences", "[preference]" ) {
     }
 
     SECTION("All values should be empty", "[fail]") {
-        preferencesMap = getPreferencesMap("fail.ini");
+        preferencesMap = getPreferencesMap("fail1.ini");
+        filterPreferencesMap(preferencesMap, "../src/");
+        REQUIRE(preferencesMap.empty());
+        preferencesMap = getPreferencesMap("fail2.ini");
         filterPreferencesMap(preferencesMap, "../src/");
         REQUIRE(preferencesMap.empty());
     }
