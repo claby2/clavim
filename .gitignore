@@ -1,5 +1,5 @@
 .vscode
-clavim.exe
+*.exe
 text.txt
 *.o
 *.ttf
