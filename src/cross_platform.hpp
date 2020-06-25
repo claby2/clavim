@@ -5,7 +5,7 @@
 #ifdef _WIN32
 #include <direct.h>
 #include <windows.h>
-#define dirSep "\\" // Directory seperator for windows
+#define dirSep "\\" // Directory separator for windows
 #define PATH_MAX MAX_PATH
 
 /*
@@ -21,7 +21,7 @@ std::string exePath() {
 #include <unistd.h>
 #include <limits.h>
 #define _getcwd getcwd
-#define dirSep "/" // Directory seperator
+#define dirSep "/" // Directory separator
 
 /*
 Get exe path, linux
@@ -40,7 +40,7 @@ std::string exePath() {
 #include <unistd.h>
 #include <limits.h>
 #define _getcwd getcwd
-#define dirSep "/" // Directory seperator
+#define dirSep "/" // Directory separator
 
 /*
 Get exe path, apple
