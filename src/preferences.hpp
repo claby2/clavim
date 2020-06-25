@@ -6,6 +6,13 @@
 
 extern std::fstream preferences;
 
+struct Preference {
+    std::string name;
+    std::string type;
+};
+
+extern Preference recognizedPreferences[];
+
 /*
 Returns string without space and double quotation character(s)
 */

@@ -9,11 +9,8 @@
 #include <SDL2/SDL_ttf.h>
 #include <iostream>
 
-/*
-Set variables based on preferences
-*/
-void setFromPreferences() {
-    std::map<std::string, std::string> preferencesMap = getPreferencesMap(exePath() + dirSep + "preferences.ini");
+void setFromPreferences(std::string preferencesFilePath) {
+    std::map<std::string, std::string> preferencesMap = getPreferencesMap(preferencesFilePath);
     filterPreferencesMap(preferencesMap, (exePath() + dirSep));
     if(preferencesMap.find("window_width")         != preferencesMap.end()) windowWidth       = std::stoi(preferencesMap["window_width"]       );
     if(preferencesMap.find("window_height")        != preferencesMap.end()) windowHeight      = std::stoi(preferencesMap["window_height"]      );
@@ -37,18 +34,12 @@ void setFromPreferences() {
     }
 }
 
-/*
-Get current working directory
-*/
 std::string pwd() {
     char buffer[PATH_MAX];
     _getcwd(buffer, PATH_MAX);
     return std::string(buffer);
 }
 
-/*
-Initialize related to SDL2
-*/
 void init() {
     SDL_Init(SDL_INIT_VIDEO);
     TTF_Init();
@@ -64,9 +55,6 @@ void init() {
     fontHeight = height; // Redefine height
 }
 
-/*
-Close related to SDL2
-*/
 void close() {
     SDL_DestroyRenderer(gRenderer);
     SDL_DestroyWindow(gWindow);
@@ -79,7 +67,7 @@ void close() {
 }
 
 int main(int argc, char* args[]) {
-    setFromPreferences();
+    setFromPreferences(exePath() + dirSep + "preferences.ini");
 
     if(args[1]) {
         saveFilePath = pwd() + dirSep + args[1];

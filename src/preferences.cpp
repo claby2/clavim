@@ -7,6 +7,17 @@
 
 std::fstream preferences;
 
+Preference recognizedPreferences[] = {
+    {.name = "window_width", .type = "number"},
+    {.name = "window_height", .type = "number"},
+    {.name = "full_line_highlight", .type = "number"},
+    {.name = "font_size", .type = "number"},
+    {.name = "spaces_per_tab", .type = "number"},
+    {.name = "cursor_color", .type = "color"},
+    {.name = "line_highlight_color", .type = "color"},
+    {.name = "font", .type = "file"}
+};
+
 std::string getFilteredString(std::string s) {
     std::string output;
     output.reserve(s.size());
@@ -26,7 +37,8 @@ bool hasOnlyHexSymbols(std::string s) {
 
 bool eraseIfNotValidNumber(std::map<std::string, std::string> &preferencesMap, std::string key) {
     if(preferencesMap.find(key) != preferencesMap.end()) {
-        if(!hasOnlyDigits(preferencesMap[key])) {
+        std::string value = preferencesMap[key];
+        if(!hasOnlyDigits(value) || value.empty()) {
             preferencesMap.erase(key);
             return true;
         }
@@ -37,7 +49,7 @@ bool eraseIfNotValidNumber(std::map<std::string, std::string> &preferencesMap, s
 bool eraseIfNotValidColor(std::map<std::string, std::string> &preferencesMap, std::string key) {
     if(preferencesMap.find(key) != preferencesMap.end()) {
         std::string color = preferencesMap[key];
-        if(!hasOnlyHexSymbols(color) || color.length() != 7 || color[0] != '#') {
+        if(!hasOnlyHexSymbols(color) || color.length() != 6 || color.empty()) {
             preferencesMap.erase(key);
             return true;
         }
@@ -59,21 +71,22 @@ bool eraseIfNotValidFile(std::map<std::string, std::string> &preferencesMap, std
 }
 
 void filterPreferencesMap(std::map<std::string, std::string> &preferencesMap, std::string filePath) {
-    std::vector<std::string> invalidPropertyNames;
-    if(eraseIfNotValidNumber(preferencesMap, "window_width")) invalidPropertyNames.push_back("window_width");
-    if(eraseIfNotValidNumber(preferencesMap, "window_height")) invalidPropertyNames.push_back("window_height");
-    if(eraseIfNotValidNumber(preferencesMap, "full_line_highlight")) invalidPropertyNames.push_back("full_line_highlight");
-    if(eraseIfNotValidNumber(preferencesMap, "font_size")) invalidPropertyNames.push_back("font_size");
-    if(eraseIfNotValidNumber(preferencesMap, "spaces_per_tab")) invalidPropertyNames.push_back("spaces_per_tab");
-    if(eraseIfNotValidColor(preferencesMap, "cursor_color")) invalidPropertyNames.push_back("cursor_color");
-    if(eraseIfNotValidColor(preferencesMap, "line_highlight_color")) invalidPropertyNames.push_back("line_highlight_color");
-    if(eraseIfNotValidFile(preferencesMap, "font", filePath)) invalidPropertyNames.push_back("font");
-    if(invalidPropertyNames.size() > 0) {
-        std::cout << "WARN: The following preference(s) have not been properly defined in preferences.ini:\n\n";
-        for(int i = 0; i < invalidPropertyNames.size(); i++) {
-            std::cout << "\t- " << invalidPropertyNames[i] << "\n";
+    std::vector<std::string> invalidPreferences;
+    for(int i = 0; i < (sizeof(recognizedPreferences)/sizeof(*recognizedPreferences)) ; i++) {
+        Preference preference = recognizedPreferences[i];
+        if(
+            (preference.type == "number" && eraseIfNotValidNumber(preferencesMap, preference.name)) ||
+            (preference.type == "color"  && eraseIfNotValidColor (preferencesMap, preference.name)) ||
+            (preference.type == "file"   && eraseIfNotValidFile  (preferencesMap, preference.name, filePath))) {
+            invalidPreferences.push_back(preference.name);
+        }   
+    }
+    if(invalidPreferences.size() > 0) {
+        std::cout << "WARN: The following preferences have not been properly defined in preferences.ini:\n\n";
+        for(int i = 0; i < invalidPreferences.size(); i++) {
+            std::cout << "\t- " << invalidPreferences[i] << "\n";
         }
-        std::cout << "\nThe default values for these properties have been used instead.\n";
+        std::cout << "\nThe default values for these preferences have been used instead.\n";
     }
 }
 
@@ -83,6 +96,8 @@ std::map<std::string, std::string> getPreferencesMap(std::string preferencesFile
     std::string line;
     while(std::getline(preferences, line)) {
         if(line[0] != ';' && line[0] != '#' && line[0] != '[' && !line.empty()) {
+            line = line.substr(0, line.find("#"));
+            line = line.substr(0, line.find(";"));
             std::size_t delimiter = line.find("=");
             std::string name = getFilteredString(line.substr(0, delimiter));
             std::string value = getFilteredString(line.substr(delimiter + 1, line.length()));
