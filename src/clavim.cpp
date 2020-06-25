@@ -12,26 +12,31 @@
 void setFromPreferences(std::string preferencesFilePath) {
     std::map<std::string, std::string> preferencesMap = getPreferencesMap(preferencesFilePath);
     filterPreferencesMap(preferencesMap, (exePath() + dirSep));
-    if(preferencesMap.find("window_width")         != preferencesMap.end()) windowWidth       = std::stoi(preferencesMap["window_width"]       );
-    if(preferencesMap.find("window_height")        != preferencesMap.end()) windowHeight      = std::stoi(preferencesMap["window_height"]      );
-    if(preferencesMap.find("full_line_highlight")  != preferencesMap.end()) fullLineHighlight = std::stoi(preferencesMap["full_line_highlight"]);
-    if(preferencesMap.find("line_highlight_color") != preferencesMap.end()) {
+    if (preferencesMap.find("window_width") != preferencesMap.end())
+        windowWidth = std::stoi(preferencesMap["window_width"]);
+    if (preferencesMap.find("window_height") != preferencesMap.end())
+        windowHeight = std::stoi(preferencesMap["window_height"]);
+    if (preferencesMap.find("full_line_highlight") != preferencesMap.end())
+        fullLineHighlight = std::stoi(preferencesMap["full_line_highlight"]);
+    if (preferencesMap.find("line_highlight_color") != preferencesMap.end()) {
         LINE_HIGHLIGHT_COLOR = {
             (uint8_t)std::stoi(preferencesMap["line_highlight_color"].substr(1, 2), nullptr, 16),
             (uint8_t)std::stoi(preferencesMap["line_highlight_color"].substr(3, 2), nullptr, 16),
-            (uint8_t)std::stoi(preferencesMap["line_highlight_color"].substr(5, 2), nullptr, 16)
-        };
+            (uint8_t)std::stoi(preferencesMap["line_highlight_color"].substr(5, 2), nullptr, 16)};
     }
-    if(preferencesMap.find("font")                 != preferencesMap.end()) fontName = preferencesMap["font"];
-    if(preferencesMap.find("font_size")            != preferencesMap.end()) fontHeight = std::stoi(preferencesMap["font_size"]);
-    if(preferencesMap.find("spaces_per_tab")       != preferencesMap.end()) spacesPerTab = std::stoi(preferencesMap["spaces_per_tab"]);
-    if(preferencesMap.find("line_number_mode")     != preferencesMap.end()) lineNumberMode = preferencesMap["line_number_mode"];
-    if(preferencesMap.find("cursor_color")         != preferencesMap.end()) {
+    if (preferencesMap.find("font") != preferencesMap.end())
+        fontName = preferencesMap["font"];
+    if (preferencesMap.find("font_size") != preferencesMap.end())
+        fontHeight = std::stoi(preferencesMap["font_size"]);
+    if (preferencesMap.find("spaces_per_tab") != preferencesMap.end())
+        spacesPerTab = std::stoi(preferencesMap["spaces_per_tab"]);
+    if (preferencesMap.find("line_number_mode") != preferencesMap.end())
+        lineNumberMode = preferencesMap["line_number_mode"];
+    if (preferencesMap.find("cursor_color") != preferencesMap.end()) {
         CURSOR_COLOR = {
             (uint8_t)std::stoi(preferencesMap["cursor_color"].substr(1, 2), nullptr, 16),
             (uint8_t)std::stoi(preferencesMap["cursor_color"].substr(3, 2), nullptr, 16),
-            (uint8_t)std::stoi(preferencesMap["cursor_color"].substr(5, 2), nullptr, 16)
-        };
+            (uint8_t)std::stoi(preferencesMap["cursor_color"].substr(5, 2), nullptr, 16)};
     }
 }
 
@@ -67,14 +72,14 @@ void close() {
     SDL_Quit();
 }
 
-int main(int argc, char* args[]) {
+int main(int argc, char *args[]) {
     setFromPreferences(exePath() + dirSep + "preferences.ini");
 
     if(args[1]) {
         saveFilePath = pwd() + dirSep + args[1];
         file.open(saveFilePath.c_str());
         if(!file) { 
-            std::ofstream file {saveFilePath};
+            std::ofstream file{saveFilePath};
             std::cout << "\"" << args[1] << "\" [New File] has been created\n";
         }
         file.close();
@@ -134,5 +139,4 @@ int main(int argc, char* args[]) {
         std::cout << "Please specify a file to edit\n";
     }
     return 0;
-
 }
