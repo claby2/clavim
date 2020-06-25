@@ -6,7 +6,6 @@
 #include <direct.h>
 #include <windows.h>
 #define dirSep "\\" // Directory separator for windows
-#define PATH_MAX MAX_PATH
 
 /*
 Get exe path, windows
