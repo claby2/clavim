@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 std::fstream preferences;
 
@@ -15,7 +16,8 @@ Preference recognizedPreferences[] = {
     {.name = "spaces_per_tab", .type = "number"},
     {.name = "cursor_color", .type = "color"},
     {.name = "line_highlight_color", .type = "color"},
-    {.name = "font", .type = "file"}
+    {.name = "font", .type = "file"},
+    {.name = "line_number_mode", .type = "lineNumberMode"}
 };
 
 std::string getFilteredString(std::string s) {
@@ -57,6 +59,21 @@ bool eraseIfNotValidColor(std::map<std::string, std::string> &preferencesMap, st
     return false;
 }
 
+bool eraseIfNotValidLineNumberMode(std::map<std::string, std::string> &preferencesMap, std::string key) {
+    if(preferencesMap.find(key) != preferencesMap.end()) {
+        std::string mode = preferencesMap[key];
+        std::transform(mode.begin(), mode.end(), mode.begin(),
+            [](unsigned char c){ return std::tolower(c); }); // Turn into lower case
+        if(mode != "absolute" && mode != "relative" && mode != "hybrid") {
+            preferencesMap.erase(key);
+            return true;
+        } else {
+            preferencesMap[key] = mode; // In case preference is not lower case as mode is confirmed to be all lower case
+        }
+    }
+    return false;
+}
+
 bool eraseIfNotValidFile(std::map<std::string, std::string> &preferencesMap, std::string key, std::string filePath) {
     if(preferencesMap.find(key) != preferencesMap.end()) {
         std::string fullFilePath = filePath + preferencesMap[key];
@@ -77,6 +94,7 @@ void filterPreferencesMap(std::map<std::string, std::string> &preferencesMap, st
         if(
             (preference.type == "number" && eraseIfNotValidNumber(preferencesMap, preference.name)) ||
             (preference.type == "color"  && eraseIfNotValidColor (preferencesMap, preference.name)) ||
+            (preference.type == "lineNumberMode" && eraseIfNotValidLineNumberMode(preferencesMap, preference.name)) ||
             (preference.type == "file"   && eraseIfNotValidFile  (preferencesMap, preference.name, filePath))) {
             invalidPreferences.push_back(preference.name);
         }   

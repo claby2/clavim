@@ -21,4 +21,5 @@ std::fstream file;                                  // The file to be read and w
 std::string saveFilePath;                           // Place to read and then write
 std::string windowTitle = "clavim";                 // Title of SDL2 window
 std::string fontName = "SourceCodePro-Regular.ttf"; // Default font if not specified in preferences.ini
+std::string lineNumberMode = "absolute";            // Default line number mode if not specified in preferences.ini (options are: absolute, relative, hybrid)
 bool fullLineHighlight = false;                     // Default representation of if the entire line should be highlighted if not specified in preferences.ini

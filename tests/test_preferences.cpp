@@ -28,6 +28,7 @@ TEST_CASE( "Preferences", "[preference]" ) {
         REQUIRE(preferencesMap["font"] == "SourceCodePro-Regular.ttf");
         REQUIRE(preferencesMap["font_size"] == "8");
         REQUIRE(preferencesMap["spaces_per_tab"] == "8");
+        REQUIRE(preferencesMap["line_number_mode"] == "hybrid");
         REQUIRE(preferencesMap["cursor_color"] == "123DEF");
     }
 

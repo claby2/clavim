@@ -39,6 +39,11 @@ Erases element from map if value is not a valid color, returns true if element w
 bool eraseIfNotValidColor(std::map<std::string, std::string> &preferencesMap, std::string key);
 
 /*
+Erases element from map if the value is not a valid line number mode, returns true if element was erased, returns false if element was not erased
+*/
+bool eraseIfNotValidLineNumberMode(std::map<std::string, std::string> &preferencesMap, std::string key);
+
+/*
 Erases element from map if value is not a valid file, returns true if element was erased, returns false if element was not erased
 */
 bool eraseIfNotValidFile(std::map<std::string, std::string> &preferencesMap, std::string key, std::string filePath);

@@ -25,6 +25,7 @@ void setFromPreferences(std::string preferencesFilePath) {
     if(preferencesMap.find("font")                 != preferencesMap.end()) fontName = preferencesMap["font"];
     if(preferencesMap.find("font_size")            != preferencesMap.end()) fontHeight = std::stoi(preferencesMap["font_size"]);
     if(preferencesMap.find("spaces_per_tab")       != preferencesMap.end()) spacesPerTab = std::stoi(preferencesMap["spaces_per_tab"]);
+    if(preferencesMap.find("line_number_mode")     != preferencesMap.end()) lineNumberMode = preferencesMap["line_number_mode"];
     if(preferencesMap.find("cursor_color")         != preferencesMap.end()) {
         CURSOR_COLOR = {
             (uint8_t)std::stoi(preferencesMap["cursor_color"].substr(1, 2), nullptr, 16),

@@ -59,8 +59,21 @@ void TextArea::renderText() {
     for(int i = currentTopLine; i < currentLastLine; i++) {
         std::string lineContent = text[i];
         lineContent.erase(0, leftColumn);
-
-        std::string line = std::string(((std::to_string(text.size())).size()) - (std::to_string(i + 1).size()), ' ') + std::to_string(i + 1) + ' ' +  lineContent;
+        int lineNumber;
+        if(lineNumberMode == "absolute") {
+            lineNumber = i;
+        } else { // Assume either hybrid or relative
+            if(i < currentLine) {
+                lineNumber = (currentLine - i) - 1;
+            } else if(i > currentLine) {
+                lineNumber = (i - currentLine) - 1;
+            } else if(lineNumberMode == "relative") {
+                lineNumber = -1;
+            } else if(lineNumberMode == "hybrid") {
+                lineNumber = i;
+            }
+        }
+        std::string line = std::string(((std::to_string(text.size())).size()) - (std::to_string(lineNumber + 1).size()), ' ') + std::to_string(lineNumber + 1) + ' ' +  lineContent;
         gTextSurface = TTF_RenderUTF8_Blended(gFont, line.c_str(), TEXT_COLOR);
         gTextTexture = SDL_CreateTextureFromSurface(gRenderer, gTextSurface);
         int width, height; // Height is not actually read later on

@@ -22,6 +22,7 @@ extern std::fstream file;
 extern std::string saveFilePath;
 extern std::string windowTitle;
 extern std::string fontName;
+extern std::string lineNumberMode;
 extern bool fullLineHighlight;
 
 #endif
