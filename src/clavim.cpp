@@ -20,9 +20,9 @@ void setFromPreferences(std::string preferencesFilePath) {
         fullLineHighlight = std::stoi(preferencesMap["full_line_highlight"]);
     if (preferencesMap.find("line_highlight_color") != preferencesMap.end()) {
         LINE_HIGHLIGHT_COLOR = {
-            (uint8_t)std::stoi(preferencesMap["line_highlight_color"].substr(1, 2), nullptr, 16),
-            (uint8_t)std::stoi(preferencesMap["line_highlight_color"].substr(3, 2), nullptr, 16),
-            (uint8_t)std::stoi(preferencesMap["line_highlight_color"].substr(5, 2), nullptr, 16)};
+            (uint8_t)std::stoi(preferencesMap["line_highlight_color"].substr(0, 2), nullptr, 16),
+            (uint8_t)std::stoi(preferencesMap["line_highlight_color"].substr(2, 2), nullptr, 16),
+            (uint8_t)std::stoi(preferencesMap["line_highlight_color"].substr(4, 2), nullptr, 16)};
     }
     if (preferencesMap.find("font") != preferencesMap.end())
         fontName = preferencesMap["font"];
@@ -34,9 +34,9 @@ void setFromPreferences(std::string preferencesFilePath) {
         lineNumberMode = preferencesMap["line_number_mode"];
     if (preferencesMap.find("cursor_color") != preferencesMap.end()) {
         CURSOR_COLOR = {
-            (uint8_t)std::stoi(preferencesMap["cursor_color"].substr(1, 2), nullptr, 16),
-            (uint8_t)std::stoi(preferencesMap["cursor_color"].substr(3, 2), nullptr, 16),
-            (uint8_t)std::stoi(preferencesMap["cursor_color"].substr(5, 2), nullptr, 16)};
+            (uint8_t)std::stoi(preferencesMap["cursor_color"].substr(0, 2), nullptr, 16),
+            (uint8_t)std::stoi(preferencesMap["cursor_color"].substr(2, 2), nullptr, 16),
+            (uint8_t)std::stoi(preferencesMap["cursor_color"].substr(4, 2), nullptr, 16)};
     }
 }
 
